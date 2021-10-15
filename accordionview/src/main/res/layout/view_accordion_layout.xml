@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Accordion.View">
+
+    <LinearLayout
+        style="@style/Accordion.HeaderContainer"
+        android:tag="accordion_header_container">
+
+        <LinearLayout style="@style/Accordion.Header">
+
+            <TextView
+                style="@style/Accordion.HeaderText"
+                android:tag="accordionHeadingText" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                style="@style/Accordion.HeaderButton"
+                android:tag="accordionInformationButton" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                style="@style/Accordion.HeaderButton"
+                android:tag="accordionExpandButton" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            style="@style/Accordion.Content"
+            android:tag="content_container_default" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        style="@style/Accordion.Content"
+        android:tag="content_container_below" />
+</LinearLayout>

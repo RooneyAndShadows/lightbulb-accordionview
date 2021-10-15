@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AccordionView">
+        <attr name="AV_Expanded" format="boolean" />
+        <attr name="AV_Expandable" format="boolean" />
+        <attr name="AV_DialogEnabled" format="boolean" />
+        <attr name="AV_DialogTag" format="string" />
+        <attr name="AV_DialogTitle" format="string" />
+        <attr name="AV_DialogMessage" format="string" />
+        <attr name="AV_DialogButtonText" format="string" />
+        <attr name="AV_HeadingText" format="string" />
+        <attr name="AV_HeadingIconSize" format="dimension" />
+        <attr name="AV_HeadingTextSize" format="dimension" />
+        <attr name="AV_AnimationDuration" format="integer" />
+        <attr name="AV_BackgroundCornerRadius" format="integer" />
+        <attr name="AV_InfoIconColor" format="color" />
+        <attr name="AV_ExpandIconColor" format="color" />
+        <attr name="AV_BackgroundColor" format="color" />
+        <attr name="AV_HeadingTextColor" format="color" />
+        <attr name="AV_BackgroundDrawable" format="reference" />
+        <attr name="AV_ContentPosition" format="enum">
+            <enum name="inside_header" value="1" />
+            <enum name="below_header" value="2" />
+        </attr>
+        <attr name="AV_AnimationType" format="enum">
+            <enum name="anim_none" value="1" />
+            <enum name="anim_height_transition" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <style name="Accordion" />
+
+    <style name="Accordion.View">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Accordion.HeaderContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+    </style>
+
+    <style name="Accordion.Header">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Accordion.HeaderText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/av_heading_height</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center|start</item>
+        <item name="android:text">HEADING</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Accordion.HeaderButton">
+        <item name="android:layout_width">@dimen/av_heading_height</item>
+        <item name="android:layout_height">@dimen/av_heading_height</item>
+        <item name="android:padding">@dimen/av_heading_icon_padding</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:background">@drawable/accordion_heading_button_background</item>
+    </style>
+
+    <style name="Accordion.Content">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+</resources>

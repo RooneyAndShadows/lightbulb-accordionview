@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="av_heading_height">52dp</dimen>
+    <dimen name="av_heading_text_size">24sp</dimen>
+    <dimen name="av_heading_icon_padding">8dp</dimen>
+</resources>
