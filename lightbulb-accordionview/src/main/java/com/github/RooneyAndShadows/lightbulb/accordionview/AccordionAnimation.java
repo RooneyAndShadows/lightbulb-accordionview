@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows.lightbulb.accordionview;
+package com.github.rooneyandshadows.lightbulb.accordionview;
 
 interface AccordionAnimation {
 

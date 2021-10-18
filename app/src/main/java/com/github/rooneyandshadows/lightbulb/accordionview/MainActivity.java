@@ -1,4 +1,4 @@
-package com.rands.lightbulb.accordionview;
+package com.github.rooneyandshadows.lightbulb.accordionview;
 
 import androidx.appcompat.app.AppCompatActivity;
 

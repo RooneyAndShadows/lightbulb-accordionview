@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows.lightbulb.accordionview;
+package com.github.rooneyandshadows.lightbulb.accordionview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -14,13 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.github.RooneyAndShadows.commons.string.StringUtils;
-import com.github.RooneyAndShadows.lightbulb.commons.utils.DrawableUtils;
-import com.github.RooneyAndShadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.RooneyAndShadows.lightbulb.dialogs.base.BaseDialogFragment;
-import com.github.RooneyAndShadows.lightbulb.dialogs.dialog_alert.AlertDialog;
-import com.github.RooneyAndShadows.lightbulb.dialogs.dialog_alert.AlertDialogBuilder;
-import com.rands.lightbulb.accordionview.R;
+import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils;
+import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
+import com.github.rooneyandshadows.lightbulb.dialogs.base.BaseDialogFragment;
+import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialog;
+import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialogBuilder;
+import com.github.rooneyandshadows.commons.string.StringUtils;
+import com.github.rooneyandshadows.lightbulb.accordionview.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

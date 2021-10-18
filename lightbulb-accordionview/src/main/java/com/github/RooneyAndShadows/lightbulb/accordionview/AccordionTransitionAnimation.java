@@ -1,4 +1,4 @@
-package com.github.RooneyAndShadows.lightbulb.accordionview;
+package com.github.rooneyandshadows.lightbulb.accordionview;
 
 import android.view.View;
 import android.view.animation.Animation;
