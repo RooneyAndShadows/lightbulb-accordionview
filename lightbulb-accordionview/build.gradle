@@ -53,8 +53,8 @@ afterEvaluate {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
-    implementation "com.github.RooneyAndShadows:java-commons:$versions.java.commons"
-    implementation "com.github.RooneyAndShadows:lightbulb-commons:$versions.lightbulb.commons"
-    implementation "com.github.RooneyAndShadows:lightbulb-dialogs:$versions.lightbulb.dialogs"
+    implementation "com.github.rooneyandshadows:java-commons:$versions.java.commons"
+    implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
+    implementation "com.github.rooneyandshadows:lightbulb-dialogs:$versions.lightbulb.dialogs"
     implementation "com.google.android.material:material:$versions.material"
 }
