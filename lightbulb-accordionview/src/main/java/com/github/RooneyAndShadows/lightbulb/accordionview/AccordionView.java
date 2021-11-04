@@ -16,11 +16,10 @@ import android.widget.TextView;
 
 import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.rooneyandshadows.lightbulb.dialogs.base.BaseDialogFragment;
+import com.github.rooneyandshadows.lightbulb.dialogs.base.LightBulbDialogFragment;
 import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialog;
 import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialogBuilder;
 import com.github.rooneyandshadows.java.commons.string.StringUtils;
-import com.github.rooneyandshadows.lightbulb.accordionview.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -231,11 +230,11 @@ public class AccordionView extends LinearLayout {
         }
         manager = ((FragmentActivity) getContext()).getSupportFragmentManager();
         dialog = new AlertDialogBuilder(manager, DIALOG_TAG)
-                .withDialogType(BaseDialogFragment.DialogTypes.BOTTOM_SHEET)
+                .withDialogType(LightBulbDialogFragment.DialogTypes.BOTTOM_SHEET)
                 .withTitle(dialogTitle)
                 .withMessage(dialogMessage)
                 .withCancelOnClickOutsude(true)
-                .withPositiveButton(new BaseDialogFragment.DialogButtonConfiguration(dialogButtonText, true, true), null)
+                .withPositiveButton(new LightBulbDialogFragment.DialogButtonConfiguration(dialogButtonText, true, true), null)
                 .buildDialog();
         additionalInfoIcon = ResourceUtils.getDrawable(getContext(), R.drawable.icon_info);
         additionalInfoIcon.setTint(additionalInfoDrawableColor);
