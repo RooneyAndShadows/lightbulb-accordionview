@@ -209,6 +209,8 @@ public class AccordionView extends LinearLayout {
     }
 
     private void setupHeader() {
+        setClipChildren(false);
+        setClipToPadding(false);
         headingTextView.setText(headingText);
         headingTextView.setTextColor(headingTextColor);
         headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize);
