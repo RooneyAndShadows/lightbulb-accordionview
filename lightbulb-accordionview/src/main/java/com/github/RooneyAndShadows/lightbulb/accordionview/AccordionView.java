@@ -249,7 +249,7 @@ public class AccordionView extends LinearLayout {
         if (backgroundDrawable != null)
             accordionHeaderContainer.setBackground(backgroundDrawable);
         else
-            accordionHeaderContainer.setBackground(DrawableUtils.getRoundedShapeWithColor(backgroundColor, backgroundCornerRadius));
+            accordionHeaderContainer.setBackground(DrawableUtils.getRoundedCornersDrawable(backgroundColor, backgroundCornerRadius));
     }
 
     private void setupInitialExpandState() {
