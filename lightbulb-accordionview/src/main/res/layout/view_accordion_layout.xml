@@ -4,31 +4,31 @@
 
     <LinearLayout
         style="@style/Accordion.HeaderContainer"
-        android:tag="accordion_header_container">
+        android:id="@+id/accordion_header_container">
 
         <LinearLayout style="@style/Accordion.Header">
 
             <TextView
                 style="@style/Accordion.HeaderText"
-                android:tag="accordionHeadingText" />
+                android:id="@+id/accordionHeadingText" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 style="@style/Accordion.HeaderButton"
-                android:tag="accordionInformationButton" />
+                android:id="@+id/accordionInformationButton" />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 style="@style/Accordion.HeaderButton"
-                android:tag="accordionExpandButton" />
+                android:id="@+id/accordionExpandButton" />
 
         </LinearLayout>
 
         <RelativeLayout
             style="@style/Accordion.Content"
-            android:tag="content_container_default" />
+            android:id="@+id/content_container_default" />
 
     </LinearLayout>
 
     <RelativeLayout
         style="@style/Accordion.Content"
-        android:tag="content_container_below" />
+        android:id="@+id/content_container_below" />
 </LinearLayout>

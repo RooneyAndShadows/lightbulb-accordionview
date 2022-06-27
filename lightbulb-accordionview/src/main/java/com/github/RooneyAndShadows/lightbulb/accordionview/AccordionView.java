@@ -14,13 +14,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.rooneyandshadows.java.commons.string.StringUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.dialogs.base.BaseDialogFragment;
 import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialog;
 import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialogBuilder;
-import com.github.rooneyandshadows.java.commons.string.StringUtils;
-import com.github.rooneyandshadows.lightbulb.accordionview.R;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +30,7 @@ import androidx.fragment.app.FragmentManager;
 
 @SuppressWarnings("unused")
 public class AccordionView extends LinearLayout {
-    private LinearLayout accordionView;
+    private final LinearLayout accordionView;
     private LinearLayout accordionHeaderContainer;
     private RelativeLayout contentContainer;
     private TextView headingTextView;
@@ -44,7 +43,6 @@ public class AccordionView extends LinearLayout {
     private int expandDrawableColor;
     private int backgroundColor;
     private int headingTextColor;
-    private Drawable additionalInfoIcon;
     private Drawable expandIcon;
     private Drawable collapseIcon;
     private Drawable backgroundDrawable;
@@ -56,7 +54,6 @@ public class AccordionView extends LinearLayout {
     private ContentPositionType contentPosition;
     private AccordionAnimationType animationType;
     private AlertDialog dialog;
-    private FragmentManager manager;
     private boolean dialogEnabled;
     private String DIALOG_TAG;
     private String dialogTitle;
@@ -76,17 +73,17 @@ public class AccordionView extends LinearLayout {
 
     public void setDialogTitle(String dialogTitle) {
         this.dialogTitle = dialogTitle;
-        invalidate();
+        dialog.setTitle(dialogTitle);
     }
 
     public void setDialogMessage(String dialogMessage) {
         this.dialogMessage = dialogMessage;
-        invalidate();
+        dialog.setMessage(dialogMessage);
     }
 
     public void setDialogButtonText(String dialogButtonText) {
         this.dialogButtonText = dialogButtonText;
-        invalidate();
+        initializeInformationButton();
     }
 
     public void setAnimationDuration(int animationDuration) {
@@ -95,17 +92,17 @@ public class AccordionView extends LinearLayout {
 
     public void setBackgroundCornerRadius(int backgroundCornerRadius) {
         this.backgroundCornerRadius = backgroundCornerRadius;
-        invalidate();
+        setupHeaderBackground();
     }
 
     public void setBackground(int backgroundColor) {
         this.backgroundColor = backgroundColor;
-        invalidate();
+        setupHeaderBackground();
     }
 
     public void setBackground(Drawable backgroundDrawable) {
         this.backgroundDrawable = backgroundDrawable;
-        invalidate();
+        setupHeaderBackground();
     }
 
     public void setHeadingText(String headingText) {
@@ -113,14 +110,24 @@ public class AccordionView extends LinearLayout {
         headingTextView.setText(headingText);
     }
 
-    @BindingAdapter("accordionHeadingText")
-    public static void setHeadingText(AccordionView view, String text) {
-        view.setHeadingText(text);
-    }
-
     public void setExpandable(boolean expandable) {
         this.expandable = expandable;
-        invalidate();
+        initializeExpandButton();
+    }
+
+    public void setContentPosition(ContentPositionType contentPosition) {
+        ViewGroup oldContainer = contentContainer;
+        this.contentPosition = contentPosition;
+        RelativeLayout accordionBelowContent = accordionView.findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = accordionView.findViewById(R.id.content_container_default);
+        if (this.contentPosition == ContentPositionType.BELOW_HEADER)
+            contentContainer = accordionBelowContent;
+        else contentContainer = accordionDefaultContent;
+        if (oldContainer != contentContainer)
+            while (oldContainer.getChildCount() > 0) {
+                contentContainer.addView(oldContainer.getChildAt(0));
+                oldContainer.removeViewAt(0);
+            }
     }
 
     public void expand(boolean animated) {
@@ -149,6 +156,11 @@ public class AccordionView extends LinearLayout {
         expandButton.setImageDrawable(expandIcon);
         if (expandListeners != null)
             expandListeners.onCollapsed(view);
+    }
+
+    @BindingAdapter("accordionHeadingText")
+    public static void setHeadingText(AccordionView view, String text) {
+        view.setHeadingText(text);
     }
 
     private void initView() {
@@ -192,20 +204,15 @@ public class AccordionView extends LinearLayout {
     }
 
     private void selectChildren() {
-        accordionHeaderContainer = accordionView.findViewWithTag("accordion_header_container");
-        RelativeLayout accordionBelowContent = accordionView.findViewWithTag("content_container_below");
-        RelativeLayout accordionDefaultContent = accordionView.findViewWithTag("content_container_default");
-        headingTextView = accordionView.findViewWithTag("accordionHeadingText");
-        additionalInfoButton = accordionView.findViewWithTag("accordionInformationButton");
-        expandButton = accordionView.findViewWithTag("accordionExpandButton");
-        switch (contentPosition) {
-            case BELOW_HEADER:
-                contentContainer = accordionBelowContent;
-                break;
-            default:
-                contentContainer = accordionDefaultContent;
-                break;
-        }
+        accordionHeaderContainer = accordionView.findViewById(R.id.accordion_header_container);
+        RelativeLayout accordionBelowContent = accordionView.findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = accordionView.findViewById(R.id.content_container_default);
+        headingTextView = accordionView.findViewById(R.id.accordionHeadingText);
+        additionalInfoButton = accordionView.findViewById(R.id.accordionInformationButton);
+        expandButton = accordionView.findViewById(R.id.accordionExpandButton);
+        if (contentPosition == ContentPositionType.BELOW_HEADER)
+            contentContainer = accordionBelowContent;
+        else contentContainer = accordionDefaultContent;
     }
 
     private void setupHeader() {
@@ -231,7 +238,7 @@ public class AccordionView extends LinearLayout {
             additionalInfoButton.setVisibility(GONE);
             return;
         }
-        manager = ((FragmentActivity) getContext()).getSupportFragmentManager();
+        FragmentManager manager = ((FragmentActivity) getContext()).getSupportFragmentManager();
         dialog = new AlertDialogBuilder(manager, DIALOG_TAG)
                 .withDialogType(BaseDialogFragment.DialogTypes.BOTTOM_SHEET)
                 .withTitle(dialogTitle)
@@ -239,7 +246,7 @@ public class AccordionView extends LinearLayout {
                 .withCancelOnClickOutsude(true)
                 .withPositiveButton(new BaseDialogFragment.DialogButtonConfiguration(dialogButtonText, true, true), null)
                 .buildDialog();
-        additionalInfoIcon = ResourceUtils.getDrawable(getContext(), R.drawable.icon_info);
+        Drawable additionalInfoIcon = ResourceUtils.getDrawable(getContext(), R.drawable.icon_info);
         additionalInfoIcon.setTint(additionalInfoDrawableColor);
         additionalInfoButton.setImageDrawable(additionalInfoIcon);
         additionalInfoButton.setOnClickListener(view -> dialog.show());
@@ -403,8 +410,8 @@ public class AccordionView extends LinearLayout {
         INSIDE_HEADER(1),
         BELOW_HEADER(2);
 
-        private int value;
-        private static SparseArray<ContentPositionType> map = new SparseArray<>();
+        private final int value;
+        private static final SparseArray<ContentPositionType> map = new SparseArray<>();
 
         ContentPositionType(int value) {
             this.value = value;
@@ -429,8 +436,8 @@ public class AccordionView extends LinearLayout {
         ANIM_NONE(1),
         ANIM_HEIGHT_TRANSITION(2);
 
-        private int value;
-        private static SparseArray<AccordionAnimationType> map = new SparseArray<>();
+        private final int value;
+        private static final SparseArray<AccordionAnimationType> map = new SparseArray<>();
 
         AccordionAnimationType(int value) {
             this.value = value;
