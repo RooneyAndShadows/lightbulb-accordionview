@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/Accordion.View">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:parentTag="androidx.appcompat.widget.LinearLayoutCompat">
 
     <LinearLayout
-        style="@style/Accordion.HeaderContainer"
-        android:id="@+id/accordion_header_container">
+        android:id="@+id/accordion_header_container"
+        style="@style/Accordion.HeaderContainer">
 
-        <LinearLayout style="@style/Accordion.Header">
+        <LinearLayout style="@style/Accordion.Header"
+            android:id="@+id/accordion_header">
 
             <TextView
-                style="@style/Accordion.HeaderText"
-                android:id="@+id/accordionHeadingText" />
+                android:id="@+id/accordionHeadingText"
+                style="@style/Accordion.HeaderText" />
 
             <androidx.appcompat.widget.AppCompatImageButton
-                style="@style/Accordion.HeaderButton"
-                android:id="@+id/accordionInformationButton" />
+                android:id="@+id/accordionInformationButton"
+                style="@style/Accordion.HeaderButton" />
 
             <androidx.appcompat.widget.AppCompatImageButton
-                style="@style/Accordion.HeaderButton"
-                android:id="@+id/accordionExpandButton" />
+                android:id="@+id/accordionExpandButton"
+                style="@style/Accordion.HeaderButton" />
 
         </LinearLayout>
 
         <RelativeLayout
-            style="@style/Accordion.Content"
-            android:id="@+id/content_container_default" />
+            android:id="@+id/content_container_default"
+            style="@style/Accordion.Content" />
 
     </LinearLayout>
 
     <RelativeLayout
-        style="@style/Accordion.Content"
-        android:id="@+id/content_container_below" />
-</LinearLayout>
+        android:id="@+id/content_container_below"
+        style="@style/Accordion.Content" />
+</merge>

@@ -30,8 +30,8 @@ import androidx.fragment.app.FragmentManager;
 
 @SuppressWarnings("unused")
 public class AccordionView extends LinearLayout {
-    private final LinearLayout accordionView;
     private LinearLayout accordionHeaderContainer;
+    private LinearLayout accordionHeader;
     private RelativeLayout contentContainer;
     private TextView headingTextView;
     private AppCompatImageButton additionalInfoButton;
@@ -63,8 +63,30 @@ public class AccordionView extends LinearLayout {
     public AccordionView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         readAttributes(context, attrs);
-        accordionView = (LinearLayout) inflate(getContext(), R.layout.view_accordion_layout, this);
+        inflate(getContext(), R.layout.view_accordion_layout, this);
         initView();
+    }
+
+    @Override
+    public void setClipToPadding(boolean clipToPadding) {
+        super.setClipToPadding(clipToPadding);
+        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
+        accordionBelowContent.setClipToPadding(clipToPadding);
+        accordionDefaultContent.setClipToPadding(clipToPadding);
+        accordionHeaderContainer.setClipToPadding(clipToPadding);
+        accordionHeader.setClipToPadding(clipToPadding);
+    }
+
+    @Override
+    public void setClipChildren(boolean clipChildren) {
+        super.setClipChildren(clipChildren);
+        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
+        accordionBelowContent.setClipToPadding(clipChildren);
+        accordionDefaultContent.setClipToPadding(clipChildren);
+        accordionHeaderContainer.setClipToPadding(clipChildren);
+        accordionHeader.setClipToPadding(clipChildren);
     }
 
     public void setExpandListeners(ExpansionListeners expandListeners) {
@@ -118,8 +140,8 @@ public class AccordionView extends LinearLayout {
     public void setContentPosition(ContentPositionType contentPosition) {
         ViewGroup oldContainer = contentContainer;
         this.contentPosition = contentPosition;
-        RelativeLayout accordionBelowContent = accordionView.findViewById(R.id.content_container_below);
-        RelativeLayout accordionDefaultContent = accordionView.findViewById(R.id.content_container_default);
+        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
         if (this.contentPosition == ContentPositionType.BELOW_HEADER)
             contentContainer = accordionBelowContent;
         else contentContainer = accordionDefaultContent;
@@ -205,12 +227,13 @@ public class AccordionView extends LinearLayout {
     }
 
     private void selectChildren() {
-        accordionHeaderContainer = accordionView.findViewById(R.id.accordion_header_container);
-        RelativeLayout accordionBelowContent = accordionView.findViewById(R.id.content_container_below);
-        RelativeLayout accordionDefaultContent = accordionView.findViewById(R.id.content_container_default);
-        headingTextView = accordionView.findViewById(R.id.accordionHeadingText);
-        additionalInfoButton = accordionView.findViewById(R.id.accordionInformationButton);
-        expandButton = accordionView.findViewById(R.id.accordionExpandButton);
+        accordionHeaderContainer = findViewById(R.id.accordion_header_container);
+        accordionHeader = findViewById(R.id.accordion_header);
+        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
+        headingTextView = findViewById(R.id.accordionHeadingText);
+        additionalInfoButton = findViewById(R.id.accordionInformationButton);
+        expandButton = findViewById(R.id.accordionExpandButton);
         if (contentPosition == ContentPositionType.BELOW_HEADER)
             contentContainer = accordionBelowContent;
         else contentContainer = accordionDefaultContent;
@@ -309,8 +332,7 @@ public class AccordionView extends LinearLayout {
             super.addView(child, index, params);
     }
 
-    // UNCOMMENT FOR SAVE STATE ONLY ON ROOT VIEW WITHOUT CHILD VIEWS
-    /*@Override
+    @Override
     protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
         dispatchFreezeSelfOnly(container);
     }
@@ -318,7 +340,7 @@ public class AccordionView extends LinearLayout {
     @Override
     protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
         dispatchThawSelfOnly(container);
-    }*/
+    }
 
     @Override
     public Parcelable onSaveInstanceState() {
