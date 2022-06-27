@@ -187,6 +187,7 @@ public class AccordionView extends LinearLayout {
     }
 
     private void initView() {
+        setOrientation(VERTICAL);
         selectChildren();
         setupHeader();
         initAnimation();
