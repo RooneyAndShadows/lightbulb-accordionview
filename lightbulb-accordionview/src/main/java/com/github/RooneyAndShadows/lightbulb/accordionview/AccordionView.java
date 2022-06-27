@@ -406,7 +406,7 @@ public class AccordionView extends LinearLayout {
         void onCollapsed(AccordionView view);
     }
 
-    private enum ContentPositionType {
+    public enum ContentPositionType {
         INSIDE_HEADER(1),
         BELOW_HEADER(2);
 
@@ -432,7 +432,7 @@ public class AccordionView extends LinearLayout {
         }
     }
 
-    private enum AccordionAnimationType {
+    public enum AccordionAnimationType {
         ANIM_NONE(1),
         ANIM_HEIGHT_TRANSITION(2);
 
