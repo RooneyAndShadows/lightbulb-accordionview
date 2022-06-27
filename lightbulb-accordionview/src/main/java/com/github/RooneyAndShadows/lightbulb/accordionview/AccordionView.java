@@ -59,34 +59,28 @@ public class AccordionView extends LinearLayout {
     private String dialogTitle;
     private String dialogMessage;
     private String dialogButtonText;
+    private boolean inflated;
 
     public AccordionView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         readAttributes(context, attrs);
         inflate(getContext(), R.layout.view_accordion_layout, this);
+        inflated = true;
         initView();
-    }
-
-    @Override
-    public void setClipToPadding(boolean clipToPadding) {
-        super.setClipToPadding(clipToPadding);
-        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
-        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
-        accordionBelowContent.setClipToPadding(clipToPadding);
-        accordionDefaultContent.setClipToPadding(clipToPadding);
-        accordionHeaderContainer.setClipToPadding(clipToPadding);
-        accordionHeader.setClipToPadding(clipToPadding);
     }
 
     @Override
     public void setClipChildren(boolean clipChildren) {
         super.setClipChildren(clipChildren);
-        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
-        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
-        accordionBelowContent.setClipToPadding(clipChildren);
-        accordionDefaultContent.setClipToPadding(clipChildren);
-        accordionHeaderContainer.setClipToPadding(clipChildren);
-        accordionHeader.setClipToPadding(clipChildren);
+        if(inflated)
+            setupClips();
+    }
+
+    @Override
+    public void setClipToPadding(boolean clipToPadding) {
+        super.setClipToPadding(clipToPadding);
+        if(inflated)
+            setupClips();
     }
 
     public void setExpandListeners(ExpansionListeners expandListeners) {
@@ -189,8 +183,22 @@ public class AccordionView extends LinearLayout {
     private void initView() {
         setOrientation(VERTICAL);
         selectChildren();
+        setupClips();
         setupHeader();
         initAnimation();
+    }
+
+    private void setupClips() {
+        RelativeLayout accordionBelowContent = findViewById(R.id.content_container_below);
+        RelativeLayout accordionDefaultContent = findViewById(R.id.content_container_default);
+        accordionBelowContent.setClipToPadding(getClipToPadding());
+        accordionDefaultContent.setClipToPadding(getClipToPadding());
+        accordionHeaderContainer.setClipToPadding(getClipToPadding());
+        accordionHeader.setClipToPadding(getClipToPadding());
+        accordionBelowContent.setClipChildren(getClipChildren());
+        accordionDefaultContent.setClipChildren(getClipChildren());
+        accordionHeaderContainer.setClipChildren(getClipChildren());
+        accordionHeader.setClipChildren(getClipChildren());
     }
 
     private void readAttributes(Context context, AttributeSet attrs) {
@@ -241,8 +249,6 @@ public class AccordionView extends LinearLayout {
     }
 
     private void setupHeader() {
-        setClipChildren(false);
-        setClipToPadding(false);
         headingTextView.setText(headingText);
         headingTextView.setTextColor(headingTextColor);
         headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize);
@@ -290,7 +296,7 @@ public class AccordionView extends LinearLayout {
                 contentContainer.setVisibility(VISIBLE);
         if (!expanded)
             if (contentContainer.getVisibility() == VISIBLE)
-                contentContainer.setVisibility(VISIBLE);
+                contentContainer.setVisibility(GONE);
     }
 
     private void initializeExpandButton() {
