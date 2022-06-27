@@ -128,6 +128,7 @@ public class AccordionView extends LinearLayout {
                 contentContainer.addView(oldContainer.getChildAt(0));
                 oldContainer.removeViewAt(0);
             }
+        setupInitialExpandState();
     }
 
     public void expand(boolean animated) {
