@@ -24,14 +24,16 @@ import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialogBui
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 @SuppressWarnings("unused")
 public class AccordionView extends LinearLayout {
-    private LinearLayout accordionHeaderContainer;
-    private LinearLayout accordionHeader;
+    private LinearLayoutCompat accordionHeaderContainer;
+    private ConstraintLayout accordionHeader;
     private RelativeLayout contentContainer;
     private TextView headingTextView;
     private AppCompatImageButton additionalInfoButton;
@@ -43,6 +45,7 @@ public class AccordionView extends LinearLayout {
     private int expandDrawableColor;
     private int backgroundColor;
     private int headingTextColor;
+    private int headingTextAppearance = -1;
     private Drawable expandIcon;
     private Drawable collapseIcon;
     private Drawable backgroundDrawable;
@@ -72,14 +75,14 @@ public class AccordionView extends LinearLayout {
     @Override
     public void setClipChildren(boolean clipChildren) {
         super.setClipChildren(clipChildren);
-        if(inflated)
+        if (inflated)
             setupClips();
     }
 
     @Override
     public void setClipToPadding(boolean clipToPadding) {
         super.setClipToPadding(clipToPadding);
-        if(inflated)
+        if (inflated)
             setupClips();
     }
 
@@ -100,6 +103,21 @@ public class AccordionView extends LinearLayout {
     public void setDialogButtonText(String dialogButtonText) {
         this.dialogButtonText = dialogButtonText;
         initializeInformationButton();
+    }
+
+    public void setHeadingTextColor(int headingTextColor) {
+        this.headingTextColor = headingTextColor;
+        headingTextView.setTextColor(headingTextColor);
+    }
+
+    public void setHeadingTextSize(int headingTextSize) {
+        this.headingTextSize = headingTextSize;
+        headingTextView.setTextSize(headingTextSize);
+    }
+
+    public void setHeadingTextAppearance(int headingTextAppearance) {
+        this.headingTextAppearance = headingTextAppearance;
+        headingTextView.setTextAppearance(headingTextAppearance);
     }
 
     public void setAnimationDuration(int animationDuration) {
@@ -210,20 +228,21 @@ public class AccordionView extends LinearLayout {
             headingText = a.getString(R.styleable.AccordionView_AV_HeadingText);
             dialogButtonText = a.getString(R.styleable.AccordionView_AV_DialogButtonText);
             if (StringUtils.isNullOrEmptyString(headingText))
-                headingText = "HEADING";
+                headingText = ResourceUtils.getPhrase(context, R.string.av_heading_default_text);
             if (StringUtils.isNullOrEmptyString(DIALOG_TAG))
                 DIALOG_TAG = "ACCORDION_TOOLTIP_TAG";
             if (StringUtils.isNullOrEmptyString(dialogTitle))
-                dialogTitle = "Title";
+                dialogTitle = ResourceUtils.getPhrase(context, R.string.av_default_dialog_title_text);
             if (StringUtils.isNullOrEmptyString(dialogMessage))
-                dialogMessage = "Message";
+                dialogMessage = ResourceUtils.getPhrase(context, R.string.av_default_dialog_message_text);
             contentPosition = ContentPositionType.valueOf(a.getInt(R.styleable.AccordionView_AV_ContentPosition, 1));
             animationType = AccordionAnimationType.valueOf(a.getInt(R.styleable.AccordionView_AV_AnimationType, 1));
             additionalInfoDrawableColor = a.getColor(R.styleable.AccordionView_AV_InfoIconColor, ResourceUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface));
             expandDrawableColor = a.getColor(R.styleable.AccordionView_AV_ExpandIconColor, ResourceUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface));
-            headingTextColor = a.getColor(R.styleable.AccordionView_AV_HeadingTextColor, ResourceUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface));
+            headingTextColor = a.getColor(R.styleable.AccordionView_AV_HeadingTextColor, -1);
             backgroundColor = a.getColor(R.styleable.AccordionView_AV_BackgroundColor, ResourceUtils.getColorByAttribute(getContext(), R.attr.colorSurface));
-            headingTextSize = a.getDimensionPixelSize(R.styleable.AccordionView_AV_HeadingTextSize, ResourceUtils.getDimenPxById(context, R.dimen.av_heading_text_size));
+            headingTextSize = a.getDimensionPixelSize(R.styleable.AccordionView_AV_HeadingTextSize, -1);
+            headingTextAppearance = a.getResourceId(R.styleable.AccordionView_AV_HeadingTextAppearance, R.style.Accordion_HeadingTextAppearance);
             backgroundDrawable = a.getDrawable(R.styleable.AccordionView_AV_BackgroundDrawable);
             animationDuration = a.getInteger(R.styleable.AccordionView_AV_AnimationDuration, animationDuration);
             backgroundCornerRadius = a.getInteger(R.styleable.AccordionView_AV_BackgroundCornerRadius, backgroundCornerRadius);
@@ -250,8 +269,11 @@ public class AccordionView extends LinearLayout {
 
     private void setupHeader() {
         headingTextView.setText(headingText);
-        headingTextView.setTextColor(headingTextColor);
-        headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize);
+        headingTextView.setTextAppearance(headingTextAppearance);
+        if (headingTextColor != -1)
+            headingTextView.setTextColor(headingTextColor);
+        if (headingTextSize != -1)
+            headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize);
         expandIcon = ResourceUtils.getDrawable(getContext(), R.drawable.icon_expand);
         collapseIcon = ResourceUtils.getDrawable(getContext(), R.drawable.icon_collapse);
         expandIcon.setTint(expandDrawableColor);
@@ -360,6 +382,8 @@ public class AccordionView extends LinearLayout {
         myState.backgroundColor = this.backgroundColor;
         myState.cornerRadius = this.backgroundCornerRadius;
         myState.headingTextSize = this.headingTextSize;
+        myState.headingTextColor = this.headingTextColor;
+        myState.headingTextAppearance = this.headingTextAppearance;
         myState.animationDuration = this.animationDuration;
         return myState;
     }
@@ -375,6 +399,8 @@ public class AccordionView extends LinearLayout {
         this.backgroundColor = savedState.backgroundColor;
         this.backgroundCornerRadius = savedState.cornerRadius;
         this.headingTextSize = savedState.headingTextSize;
+        this.headingTextColor = savedState.headingTextColor;
+        this.headingTextAppearance = savedState.headingTextAppearance;
         this.animationDuration = savedState.animationDuration;
         initView();
     }
@@ -386,6 +412,8 @@ public class AccordionView extends LinearLayout {
         private boolean expanded;
         private int cornerRadius;
         private int headingTextSize;
+        private int headingTextColor;
+        private int headingTextAppearance;
         private int backgroundColor;
         private int animationDuration;
 
@@ -400,6 +428,8 @@ public class AccordionView extends LinearLayout {
             buttonText = in.readString();
             cornerRadius = in.readInt();
             headingTextSize = in.readInt();
+            headingTextColor = in.readInt();
+            headingTextAppearance = in.readInt();
             backgroundColor = in.readInt();
             animationDuration = in.readInt();
             expanded = in.readInt() == 1;
@@ -413,6 +443,8 @@ public class AccordionView extends LinearLayout {
             out.writeString(buttonText);
             out.writeInt(cornerRadius);
             out.writeInt(headingTextSize);
+            out.writeInt(headingTextColor);
+            out.writeInt(headingTextAppearance);
             out.writeInt(backgroundColor);
             out.writeInt(animationDuration);
             out.writeInt(expanded ? 1 : 0);
