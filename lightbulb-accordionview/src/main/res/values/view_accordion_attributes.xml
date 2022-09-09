@@ -47,20 +47,19 @@
     <style name="Accordion.Header">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingEnd">@dimen/av_spacing_size_small</item>
+        <item name="android:paddingEnd">@dimen/av_spacing_size_tiny</item>
+        <item name="android:paddingTop">@dimen/av_spacing_size_tiny</item>
+        <item name="android:paddingBottom">@dimen/av_spacing_size_tiny</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="Accordion.HeaderText">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:paddingStart">@dimen/av_spacing_size_medium</item>
-        <item name="android:paddingTop">@dimen/av_spacing_size_small</item>
-        <item name="android:paddingBottom">@dimen/av_spacing_size_medium</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:paddingStart">@dimen/av_spacing_size_medium</item>
+        <item name="android:paddingEnd">@dimen/av_spacing_size_small</item>
         <item name="android:maxLines">1</item>
-        <item name="android:gravity">center|start</item>
         <item name="android:text">HEADING</item>
     </style>
 

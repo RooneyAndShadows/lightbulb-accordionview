@@ -16,22 +16,25 @@
             <TextView
                 android:id="@+id/accordionHeadingText"
                 style="@style/Accordion.HeaderText"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/accordionInformationButton"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/accordionInformationButton"
                 style="@style/Accordion.HeaderButton"
                 app:layout_constraintEnd_toStartOf="@id/accordionExpandButton"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/accordionExpandButton"
                 style="@style/Accordion.HeaderButton"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
