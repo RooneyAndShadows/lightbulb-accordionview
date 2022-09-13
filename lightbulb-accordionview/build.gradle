@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 android {
@@ -6,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 32
-        versionCode 109
-        versionName "1.0.9"
+        versionCode 1010
+        versionName "1.0.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -43,10 +45,13 @@ afterEvaluate {
         }
         publications {
             release(MavenPublication) {
+                from components.release
                 groupId "$environment.group_id"
                 version android.defaultConfig.versionName
                 artifactId project.name
-                artifact(bundleReleaseAar)
+                artifact sourceJar {
+                    classifier "sources"
+                }
             }
         }
     }
