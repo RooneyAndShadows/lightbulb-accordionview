@@ -284,6 +284,16 @@ public class AccordionView extends LinearLayout {
             return;
         initializeInformationButton();
         initializeExpandButton();
+        measureWithButtons();
+    }
+
+    private void measureWithButtons() {
+        int matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(((View) accordionHeader.getParent()).getWidth(), View.MeasureSpec.EXACTLY);
+        int wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        expandButton.setVisibility(VISIBLE);
+        additionalInfoButton.setVisibility(VISIBLE);
+        accordionHeader.measure(matchParentMeasureSpec, wrapContentMeasureSpec);
+        accordionHeader.setMinHeight(accordionHeader.getMeasuredHeight());
     }
 
     private void initializeInformationButton() {
