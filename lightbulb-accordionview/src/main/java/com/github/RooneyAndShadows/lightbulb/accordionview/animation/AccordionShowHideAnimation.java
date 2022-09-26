@@ -1,9 +1,9 @@
-package com.github.rooneyandshadows.lightbulb.accordionview;
+package com.github.rooneyandshadows.lightbulb.accordionview.animation;
 
 import android.view.View;
 
-class AccordionShowHideAnimation implements AccordionAnimation {
-    private View targetView;
+public class AccordionShowHideAnimation implements AccordionAnimation {
+    private final View targetView;
 
     public AccordionShowHideAnimation(View targetView) {
         this.targetView = targetView;

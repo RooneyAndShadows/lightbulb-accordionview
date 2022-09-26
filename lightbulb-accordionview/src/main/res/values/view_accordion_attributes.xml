@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="AccordionGroupView">
+        <attr name="AVG_SelectedId" format="reference" />
+    </declare-styleable>
+
     <declare-styleable name="AccordionView">
         <attr name="AV_Expanded" format="boolean" />
         <attr name="AV_Expandable" format="boolean" />
         <attr name="AV_DialogEnabled" format="boolean" />
+        <attr name="AV_ExpandOnHeadingClick" format="boolean" />
         <attr name="AV_DialogTag" format="string" />
         <attr name="AV_DialogTitle" format="string" />
         <attr name="AV_DialogMessage" format="string" />
@@ -68,7 +73,6 @@
         <item name="android:layout_height">@dimen/av_heading_button_height</item>
         <item name="android:padding">@dimen/av_heading_icon_padding</item>
         <item name="android:scaleType">fitXY</item>
-        <item name="android:background">@drawable/accordion_heading_button_background</item>
     </style>
 
     <style name="Accordion.Content">

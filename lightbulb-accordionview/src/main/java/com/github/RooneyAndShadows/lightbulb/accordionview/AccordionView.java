@@ -15,6 +15,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.rooneyandshadows.java.commons.string.StringUtils;
+import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionAnimation;
+import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionShowHideAnimation;
+import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionTransitionAnimation;
 import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils;
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
 import com.github.rooneyandshadows.lightbulb.dialogs.base.BaseDialogFragment;
@@ -31,7 +34,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 @SuppressWarnings("unused")
-public class AccordionView extends LinearLayout {
+public class AccordionView extends LinearLayoutCompat {
     private LinearLayoutCompat accordionHeaderContainer;
     private ConstraintLayout accordionHeader;
     private RelativeLayout contentContainer;
@@ -51,8 +54,10 @@ public class AccordionView extends LinearLayout {
     private Drawable backgroundDrawable;
     private boolean expanded = false;
     private boolean expandable = true;
+    private boolean expandOnHeadingClick = false;
     private String headingText;
     private ExpansionListeners expandListeners;
+    private ExpansionListeners onGroupCheckedListener;
     private AccordionAnimation anim;
     private ContentPositionType contentPosition;
     private AccordionAnimationType animationType;
@@ -66,6 +71,7 @@ public class AccordionView extends LinearLayout {
 
     public AccordionView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setSaveEnabled(true);
         readAttributes(context, attrs);
         inflate(getContext(), R.layout.view_accordion_layout, this);
         inflated = true;
@@ -84,6 +90,14 @@ public class AccordionView extends LinearLayout {
         super.setClipToPadding(clipToPadding);
         if (inflated)
             setupClips();
+    }
+
+    void setOnGroupCheckedListener(ExpansionListeners listener) {
+        onGroupCheckedListener = listener;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
     }
 
     public void setExpandListeners(ExpansionListeners expandListeners) {
@@ -126,17 +140,22 @@ public class AccordionView extends LinearLayout {
 
     public void setBackgroundCornerRadius(int backgroundCornerRadius) {
         this.backgroundCornerRadius = backgroundCornerRadius;
-        setupHeaderBackground();
+        setupHeader();
     }
 
     public void setBackground(int backgroundColor) {
         this.backgroundColor = backgroundColor;
-        setupHeaderBackground();
+        setupHeader();
     }
 
     public void setBackground(Drawable backgroundDrawable) {
         this.backgroundDrawable = backgroundDrawable;
-        setupHeaderBackground();
+        setupHeader();
+    }
+
+    public void setExpandOnHeadingClick(boolean expandOnHeadingClick) {
+        this.expandOnHeadingClick = expandOnHeadingClick;
+        setupHeader();
     }
 
     public void setHeadingText(String headingText) {
@@ -176,7 +195,9 @@ public class AccordionView extends LinearLayout {
         expanded = true;
         expandButton.setImageDrawable(collapseIcon);
         if (expandListeners != null)
-            expandListeners.onExpanded(view);
+            expandListeners.execute(view, true);
+        if (onGroupCheckedListener != null)
+            onGroupCheckedListener.execute(view, true);
     }
 
     public void collapse(boolean animated) {
@@ -190,7 +211,9 @@ public class AccordionView extends LinearLayout {
         expanded = false;
         expandButton.setImageDrawable(expandIcon);
         if (expandListeners != null)
-            expandListeners.onCollapsed(view);
+            onGroupCheckedListener.execute(view, false);
+        if (onGroupCheckedListener != null)
+            onGroupCheckedListener.execute(view, false);
     }
 
     @BindingAdapter("accordionHeadingText")
@@ -202,7 +225,7 @@ public class AccordionView extends LinearLayout {
         setOrientation(VERTICAL);
         selectChildren();
         setupClips();
-        setupHeader();
+        initializeHeader();
         initAnimation();
     }
 
@@ -248,6 +271,7 @@ public class AccordionView extends LinearLayout {
             backgroundCornerRadius = a.getInteger(R.styleable.AccordionView_AV_BackgroundCornerRadius, backgroundCornerRadius);
             expanded = a.getBoolean(R.styleable.AccordionView_AV_Expanded, expanded);
             expandable = a.getBoolean(R.styleable.AccordionView_AV_Expandable, expandable);
+            expandOnHeadingClick = a.getBoolean(R.styleable.AccordionView_AV_ExpandOnHeadingClick, expandOnHeadingClick);
             dialogEnabled = a.getBoolean(R.styleable.AccordionView_AV_DialogEnabled, dialogEnabled);
         } finally {
             a.recycle();
@@ -267,7 +291,7 @@ public class AccordionView extends LinearLayout {
         else contentContainer = accordionDefaultContent;
     }
 
-    private void setupHeader() {
+    private void initializeHeader() {
         headingTextView.setText(headingText);
         headingTextView.setTextAppearance(headingTextAppearance);
         if (headingTextColor != -1)
@@ -278,7 +302,7 @@ public class AccordionView extends LinearLayout {
         collapseIcon = ResourceUtils.getDrawable(getContext(), R.drawable.icon_collapse);
         expandIcon.setTint(expandDrawableColor);
         collapseIcon.setTint(expandDrawableColor);
-        setupHeaderBackground();
+        setupHeader();
         setupInitialExpandState();
         if (isInEditMode())
             return;
@@ -298,9 +322,11 @@ public class AccordionView extends LinearLayout {
 
     private void initializeInformationButton() {
         if (!dialogEnabled) {
+            additionalInfoButton.setBackground(null);
             additionalInfoButton.setVisibility(GONE);
             return;
         }
+        additionalInfoButton.setBackgroundResource(R.drawable.accordion_heading_button_background);
         FragmentManager manager = ((FragmentActivity) getContext()).getSupportFragmentManager();
         dialog = new AlertDialogBuilder(manager, DIALOG_TAG)
                 .withDialogType(BaseDialogFragment.DialogTypes.BOTTOM_SHEET)
@@ -315,11 +341,18 @@ public class AccordionView extends LinearLayout {
         additionalInfoButton.setOnClickListener(view -> dialog.show());
     }
 
-    private void setupHeaderBackground() {
-        if (backgroundDrawable != null)
-            accordionHeaderContainer.setBackground(backgroundDrawable);
-        else
-            accordionHeaderContainer.setBackground(DrawableUtils.getRoundedCornersDrawable(backgroundColor, backgroundCornerRadius));
+    private void setupHeader() {
+        accordionHeaderContainer.setBackground(backgroundDrawable != null ? backgroundDrawable : DrawableUtils.getRoundedCornersDrawable(backgroundColor, backgroundCornerRadius));
+        if (expandOnHeadingClick && expandable) {
+            accordionHeader.setClickable(true);
+            accordionHeader.setFocusable(true);
+            accordionHeader.setOnClickListener(view -> {
+                if (expanded) collapse(true);
+                else expand(true);
+            });
+        } else {
+            accordionHeader.setOnClickListener(null);
+        }
     }
 
     private void setupInitialExpandState() {
@@ -333,21 +366,19 @@ public class AccordionView extends LinearLayout {
 
     private void initializeExpandButton() {
         if (expanded) {
-            if (expandable)
-                expandButton.setImageDrawable(collapseIcon);
+            if (expandable) expandButton.setImageDrawable(collapseIcon);
         } else {
-            if (expandable)
-                expandButton.setImageDrawable(expandIcon);
+            if (expandable) expandButton.setImageDrawable(expandIcon);
         }
         if (expandable) {
+            expandButton.setBackgroundResource(R.drawable.accordion_heading_button_background);
+            expandButton.setVisibility(VISIBLE);
             expandButton.setOnClickListener(view -> {
-                if (expanded) {
-                    collapse(true);
-                } else {
-                    expand(true);
-                }
+                if (expanded) collapse(true);
+                else expand(true);
             });
         } else {
+            expandButton.setBackground(null);
             expandButton.setVisibility(GONE);
         }
     }
@@ -395,6 +426,7 @@ public class AccordionView extends LinearLayout {
         myState.headingTextColor = this.headingTextColor;
         myState.headingTextAppearance = this.headingTextAppearance;
         myState.animationDuration = this.animationDuration;
+        myState.visibility = this.getVisibility();
         return myState;
     }
 
@@ -412,6 +444,7 @@ public class AccordionView extends LinearLayout {
         this.headingTextColor = savedState.headingTextColor;
         this.headingTextAppearance = savedState.headingTextAppearance;
         this.animationDuration = savedState.animationDuration;
+        this.setVisibility(savedState.visibility);
         initView();
     }
 
@@ -426,6 +459,7 @@ public class AccordionView extends LinearLayout {
         private int headingTextAppearance;
         private int backgroundColor;
         private int animationDuration;
+        private int visibility;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -442,6 +476,7 @@ public class AccordionView extends LinearLayout {
             headingTextAppearance = in.readInt();
             backgroundColor = in.readInt();
             animationDuration = in.readInt();
+            visibility = in.readInt();
             expanded = in.readInt() == 1;
         }
 
@@ -457,6 +492,7 @@ public class AccordionView extends LinearLayout {
             out.writeInt(headingTextAppearance);
             out.writeInt(backgroundColor);
             out.writeInt(animationDuration);
+            out.writeInt(visibility);
             out.writeInt(expanded ? 1 : 0);
         }
 
@@ -473,9 +509,7 @@ public class AccordionView extends LinearLayout {
     }
 
     public interface ExpansionListeners {
-        void onExpanded(AccordionView view);
-
-        void onCollapsed(AccordionView view);
+        public void execute(AccordionView view, boolean expanded);
     }
 
     public enum ContentPositionType {
