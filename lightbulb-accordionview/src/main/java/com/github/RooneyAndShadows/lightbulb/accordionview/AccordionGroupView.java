@@ -2,39 +2,18 @@ package com.github.rooneyandshadows.lightbulb.accordionview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.github.rooneyandshadows.java.commons.string.StringUtils;
-import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionAnimation;
-import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionShowHideAnimation;
-import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionTransitionAnimation;
-import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils;
-import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils;
-import com.github.rooneyandshadows.lightbulb.dialogs.base.BaseDialogFragment;
-import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialog;
-import com.github.rooneyandshadows.lightbulb.dialogs.dialog_alert.AlertDialogBuilder;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.databinding.BindingAdapter;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 @SuppressWarnings("unused")
 public class AccordionGroupView extends LinearLayoutCompat {
@@ -127,6 +106,21 @@ public class AccordionGroupView extends LinearLayoutCompat {
             setCheckedIdInternally(checkedId, false, false);
     }
 
+    public void setCheckedId(int newCheckId) {
+        setCheckedId(newCheckId, true);
+    }
+
+    public void setCheckedId(int newCheckId, boolean animate) {
+        if (checkedId == newCheckId)
+            return;
+        if (protectFromCheckedChange)
+            return;
+        protectFromCheckedChange = true;
+        closeAllExceptFor(checkedId, animate);
+        protectFromCheckedChange = false;
+        setCheckedIdInternally(newCheckId, animate, true);
+    }
+
     private void readAttributes(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AccordionGroupView, 0, 0);
         try {
@@ -134,6 +128,18 @@ public class AccordionGroupView extends LinearLayoutCompat {
         } finally {
             a.recycle();
         }
+    }
+
+    private void closeAllExceptFor(int id, boolean animate) {
+        getChildren().stream()
+                .filter(checkableView -> {
+                    if (!checkableView.isExpanded())
+                        return false;
+                    if (checkableView.getId() == -1)
+                        return false;
+                    return checkableView.getId() != id;
+                })
+                .forEach(checkableView -> checkableView.collapse(animate));
     }
 
     private void setupInternalCallbacks(AccordionView targetView) {
@@ -144,14 +150,7 @@ public class AccordionGroupView extends LinearLayoutCompat {
             int idToCheck = -1;
             if (expanded) {
                 idToCheck = view.getId();
-                getChildren()
-                        .stream()
-                        .filter(checkableView -> {
-                            if (checkableView.getId() == -1)
-                                return false;
-                            return checkableView.getId() != checkedId;
-                        })
-                        .forEach(checkableView -> checkableView.collapse(true));
+                closeAllExceptFor(checkedId, true);
             }
             protectFromCheckedChange = false;
             if (checkedId == idToCheck)
@@ -173,7 +172,7 @@ public class AccordionGroupView extends LinearLayoutCompat {
             protectFromCheckedChange = false;
         } else {
             AccordionView viewToCheck = findViewById(checkedId);
-            if (viewToCheck != null)
+            if (viewToCheck != null && !viewToCheck.isExpanded())
                 viewToCheck.expand(animate);
             if (notifyChange && onCheckedChangeListener != null)
                 onCheckedChangeListener.execute(checkedId, viewToCheck);
