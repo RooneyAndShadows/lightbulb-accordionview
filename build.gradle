@@ -9,8 +9,8 @@ buildscript {
                 android_appcompat: "1.5.1",
                 material         : "1.4.0",
                 lightbulb        : [
-                        commons: "1.0.6",
-                        dialogs: "1.0.9"
+                        commons: "1.0.11",
+                        dialogs: "1.0.12"
                 ],
                 java             : [
                         commons: "1.0.6"

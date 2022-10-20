@@ -402,15 +402,15 @@ public class AccordionView extends LinearLayoutCompat {
             super.addView(child, index, params);
     }
 
-    @Override
-    protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
-        dispatchFreezeSelfOnly(container);
-    }
+    //@Override
+    //protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
+    //    dispatchFreezeSelfOnly(container);
+    //}
 
-    @Override
-    protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
-        dispatchThawSelfOnly(container);
-    }
+    //@Override
+    //protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
+    //    dispatchThawSelfOnly(container);
+    //}
 
     @Override
     public Parcelable onSaveInstanceState() {
