@@ -6,45 +6,21 @@
     tools:parentTag="androidx.appcompat.widget.LinearLayoutCompat">
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/accordion_header_container"
-        style="@style/Accordion.HeaderContainer">
+        android:id="@+id/accordion_header"
+        style="@style/AccordionHeader"
+        app:divider="@drawable/accordion_divider_horizontal_space_small"
+        app:showDividers="middle">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/accordion_header"
-            style="@style/Accordion.Header">
+        <TextView
+            android:id="@+id/accordion_heading_text"
+            style="@style/AccordionHeaderText" />
 
-            <TextView
-                android:id="@+id/accordionHeadingText"
-                style="@style/Accordion.HeaderText"
-                app:layout_constraintEnd_toStartOf="@id/accordionInformationButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/accordionInformationButton"
-                style="@style/Accordion.HeaderButton"
-                app:layout_constraintEnd_toStartOf="@id/accordionExpandButton"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/accordionExpandButton"
-                style="@style/Accordion.HeaderButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <RelativeLayout
-            android:id="@+id/content_container_default"
-            style="@style/Accordion.Content.Default" />
-
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/accordion_expand_button"
+            style="@style/AccordionHeaderButton" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <RelativeLayout
-        android:id="@+id/content_container_below"
-        style="@style/Accordion.Content.Below" />
+        android:id="@+id/accordion_content"
+        style="@style/AccordionContent" />
 </merge>

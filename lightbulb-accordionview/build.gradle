@@ -2,12 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         minSdkVersion 24
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 1014
         versionName "1.0.14"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -64,4 +65,7 @@ dependencies {
     implementation "com.github.rooneyandshadows:lightbulb-commons:$versions.lightbulb.commons"
     implementation "com.github.rooneyandshadows:lightbulb-dialogs:$versions.lightbulb.dialogs"
     implementation "com.google.android.material:material:$versions.material"
+    implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.core:core-ktx:+'
 }
