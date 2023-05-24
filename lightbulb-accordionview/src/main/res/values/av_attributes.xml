@@ -13,9 +13,7 @@
         <attr name="av_heading_text_Size" format="dimension" />
         <attr name="av_heading_text_appearance" format="reference" />
         <attr name="av_animation_duration" format="integer" />
-        <attr name="av_corner_radius" format="integer" />
         <attr name="av_expand_icon_color" format="color" />
-        <attr name="av_background_color" format="color" />
         <attr name="av_heading_text_color" format="color" />
         <attr name="av_animation" format="enum">
             <enum name="anim_none" value="1" />
@@ -32,7 +30,6 @@
     </style>
 
     <style name="AccordionHeader">
-        <item name="android:duplicateParentState">true</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/av_spacing_size_tiny</item>
@@ -41,7 +38,6 @@
 
     <style name="AccordionHeaderText">
         <item name="android:layout_weight">1</item>
-        <item name="android:duplicateParentState">true</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/av_spacing_size_medium</item>
@@ -52,7 +48,6 @@
     </style>
 
     <style name="AccordionHeaderButton">
-        <item name="android:duplicateParentState">true</item>
         <item name="android:layout_width">@dimen/av_heading_button_height</item>
         <item name="android:layout_height">@dimen/av_heading_button_height</item>
         <item name="android:padding">@dimen/av_heading_icon_padding</item>

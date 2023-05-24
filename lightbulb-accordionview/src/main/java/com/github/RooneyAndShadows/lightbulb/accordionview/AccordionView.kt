@@ -37,14 +37,12 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         return@lazy findViewById(R.id.accordion_expand_button)
     }
     private var animationDuration = 250
-    private var backgroundCornerRadius = 0
     private var headingTextSize = 0
     private var expandDrawableColor: Int = 0
         set(value) {
             field = value
             expandIcon?.setTint(field)
         }
-    private var backgroundColor = 0
     private var headingTextColor = 0
     private var headingTextAppearance = -1
     private var expandIcon: Drawable? = null
@@ -101,17 +99,6 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     }
 
     @Override
-    override fun setBackground(backgroundDrawable: Drawable?) {
-        val drawable = backgroundDrawable?.let {
-            return@let DrawableUtils.getRoundedCornersDrawable(
-                backgroundColor,
-                backgroundCornerRadius
-            )
-        }
-        super.setBackground(drawable)
-    }
-
-    @Override
     override fun onCreateDrawableState(extraSpace: Int): IntArray? {
         val drawableState = super.onCreateDrawableState(extraSpace + 1)
         if (isExpanded) {
@@ -145,16 +132,6 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
 
     fun setAnimationDuration(animationDuration: Int) {
         this.animationDuration = animationDuration
-    }
-
-    fun setBackgroundCornerRadius(backgroundCornerRadius: Int) {
-        this.backgroundCornerRadius = backgroundCornerRadius
-        val currentBg = background
-        background = currentBg
-    }
-
-    fun setBackground(backgroundColor: Int) {
-        this.backgroundColor = backgroundColor
     }
 
     fun setExpandOnHeadingClick(expandOnHeadingClick: Boolean) {
@@ -211,20 +188,12 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
                     ResourceUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface)
                 )
                 headingTextColor = getColor(R.styleable.AccordionView_av_heading_text_color, -1)
-                backgroundColor = getColor(
-                    R.styleable.AccordionView_av_background_color,
-                    ResourceUtils.getColorByAttribute(getContext(), R.attr.colorSurface)
-                )
                 headingTextSize = getDimensionPixelSize(R.styleable.AccordionView_av_heading_text_Size, -1)
                 headingTextAppearance = getResourceId(
                     R.styleable.AccordionView_av_heading_text_appearance,
                     R.style.AccordionHeadingTextAppearance
                 )
                 animationDuration = getInteger(R.styleable.AccordionView_av_animation_duration, animationDuration)
-                backgroundCornerRadius = getInteger(
-                    R.styleable.AccordionView_av_corner_radius,
-                    backgroundCornerRadius
-                )
                 isExpanded = getBoolean(R.styleable.AccordionView_av_expanded, isExpanded)
                 expandable = getBoolean(R.styleable.AccordionView_av_expandable, expandable)
                 expandOnHeadingClick = getBoolean(R.styleable.AccordionView_av_expand_on_heading_click, expandOnHeadingClick)
@@ -252,7 +221,6 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         headingTextView.setTextAppearance(headingTextAppearance)
         if (headingTextColor != -1) headingTextView.setTextColor(headingTextColor)
         if (headingTextSize != -1) headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize.toFloat())
-        expandIcon = ResourceUtils.getDrawable(context, R.drawable.av_icon_expand)
         setupInitialExpandState()
         initializeExpandButton()
         syncExpandButton()
@@ -271,13 +239,16 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     }
 
     private fun initializeExpandButton() {
+        expandIcon = ResourceUtils.getDrawable(context, R.drawable.av_icon_expand)
         expandIcon!!.setTint(expandDrawableColor)
-        if (expandable) {
-            expandButton.setImageDrawable(expandIcon)
-            expandButton.setBackgroundResource(R.drawable.av_heading_button_background)
-            expandButton.visibility = VISIBLE
-            expandButton.setOnClickListener { if (isExpanded) collapse(true) else expand(true) }
-        } else {
+        expandButton.apply {
+            if (expandable) {
+                expandButton.setImageDrawable(expandIcon)
+                expandButton.setBackgroundResource(R.drawable.av_heading_button_background)
+                expandButton.setOnClickListener { if (isExpanded) collapse(true) else expand(true) }
+                expandButton.visibility = VISIBLE
+                return@apply
+            }
             expandButton.background = null
             expandButton.visibility = GONE
         }
@@ -294,16 +265,16 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     //protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
     //    dispatchFreezeSelfOnly(container);
     //}
+
     //@Override
     //protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
     //    dispatchThawSelfOnly(container);
     //}
+
     public override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val myState = SavedState(superState)
         myState.expanded = isExpanded
-        myState.backgroundColor = backgroundColor
-        myState.cornerRadius = backgroundCornerRadius
         myState.headingTextSize = headingTextSize
         myState.headingTextColor = headingTextColor
         myState.headingTextAppearance = headingTextAppearance
@@ -316,8 +287,6 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         val savedState = state as SavedState
         super.onRestoreInstanceState(savedState.superState)
         isExpanded = savedState.expanded
-        backgroundColor = savedState.backgroundColor
-        backgroundCornerRadius = savedState.cornerRadius
         headingTextSize = savedState.headingTextSize
         headingTextColor = savedState.headingTextColor
         headingTextAppearance = savedState.headingTextAppearance

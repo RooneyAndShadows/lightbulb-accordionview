@@ -7,4 +7,5 @@
     <dimen name="av_spacing_size_tiny">4dp</dimen>
     <dimen name="av_spacing_size_small">8dp</dimen>
     <dimen name="av_spacing_size_medium">12dp</dimen>
+    <dimen name="av_bg_corner_radius">4dp</dimen>
 </resources>
