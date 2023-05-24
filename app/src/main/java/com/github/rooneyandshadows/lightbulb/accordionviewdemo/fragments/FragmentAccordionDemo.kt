@@ -13,8 +13,10 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 @FragmentScreen(screenName = "Accordion", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_accordion", hasLeftDrawer = true)
 class FragmentAccordionDemo : BaseFragment() {
-    @BindView(name = "accordionView")
-    lateinit var accordion: AccordionView
+    @BindView(name = "accordionViewCard")
+    lateinit var accordionCard: AccordionView
+    @BindView(name = "accordionViewStroke")
+    lateinit var accordionStroke: AccordionView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {

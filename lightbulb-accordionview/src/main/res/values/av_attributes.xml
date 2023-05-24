@@ -19,6 +19,11 @@
             <enum name="anim_none" value="1" />
             <enum name="anim_height_transition" value="2" />
         </attr>
+        <attr name="av_background" format="enum">
+            <enum name="bg_card" value="1" />
+            <enum name="bg_stroked" value="2" />
+            <enum name="bg_custom" value="3" />
+        </attr>
     </declare-styleable>
 
     <style name="Accordion" />
@@ -39,9 +44,10 @@
     <style name="AccordionHeaderText">
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">@dimen/av_spacing_size_medium</item>
-        <item name="android:paddingEnd">@dimen/av_spacing_size_small</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingStart">@dimen/av_spacing_size_small</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:maxLines">1</item>
         <item name="android:text">HEADING</item>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
@@ -16,37 +17,44 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:subtitle="demonstration"
+            tools:title="AppTitle" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/app_bar_layout"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:layout_below="@id/app_bar_layout"
-        android:padding="@dimen/av_spacing_size_medium">
+        android:orientation="vertical"
+        android:padding="@dimen/av_spacing_size_medium"
+        app:divider="@drawable/av_divider_vertical_space_medium"
+        app:showDividers="middle">
 
         <com.github.rooneyandshadows.lightbulb.accordionview.AccordionView
-            android:id="@+id/accordionView"
+            android:id="@+id/accordionViewCard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/av_bg_card"
-            android:elevation="3dp"
-            android:fillViewport="true"
-            app:av_expand_on_heading_click="true"
-            app:av_expanded="true"
-            app:av_heading_text="asfasf">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="asfasfasasfasfasf"></TextView>
+                android:text="@string/demo_content_text" />
         </com.github.rooneyandshadows.lightbulb.accordionview.AccordionView>
 
+        <com.github.rooneyandshadows.lightbulb.accordionview.AccordionView
+            android:id="@+id/accordionViewStroke"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:av_background="bg_stroked">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/demo_content_text" />
+        </com.github.rooneyandshadows.lightbulb.accordionview.AccordionView>
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-
 </RelativeLayout>

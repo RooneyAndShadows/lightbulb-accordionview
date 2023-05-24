@@ -15,10 +15,11 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.databinding.BindingAdapter
 import com.github.rooneyandshadows.java.commons.string.StringUtils
 import com.github.rooneyandshadows.lightbulb.accordionview.AccordionView.AccordionAnimationType.*
+import com.github.rooneyandshadows.lightbulb.accordionview.AccordionView.AccordionBackground.*
 import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionAnimation
 import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionShowHideAnimation
 import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionTransitionAnimation
-import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils
+import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 
 class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs) {
@@ -53,13 +54,28 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
             }
         }
     private var expandable = true
-    private var expandOnHeadingClick = false
+    private var expandOnHeadingClick = true
     private var headingText: String? = null
     private var expandListeners: OnExpandedChangeListener? = null
     private var onGroupCheckedListener: OnExpandedChangeListener? = null
     private var anim: AccordionAnimation? = null
-    private var animationType: AccordionAnimationType = ANIM_NONE
+    private var animationType: AccordionAnimationType = ANIM_HEIGHT_TRANSITION
     private var inflated = false
+    var accordionBackground: AccordionBackground = BG_CARD
+        set(value) {
+            field = value
+            elevation = 0F
+            background = when (value) {
+                BG_CARD -> {
+                    elevation = ResourceUtils.getDimenById(context, R.dimen.av_bg_card_elevation)
+                    ResourceUtils.getDrawable(context, R.drawable.av_bg_card)
+                }
+                BG_STROKED -> {
+                    ResourceUtils.getDrawable(context, R.drawable.av_bg_stroke)
+                }
+                else -> null
+            }
+        }
     var isExpanded = false
         private set(value) {
             if (field == value) return
@@ -182,7 +198,9 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
                 headingText = getString(R.styleable.AccordionView_av_heading_text)
                 if (StringUtils.isNullOrEmptyString(headingText)) headingText =
                     ResourceUtils.getPhrase(context, R.string.av_heading_default_text)
-                animationType = AccordionAnimationType.valueOf(getInt(R.styleable.AccordionView_av_animation, 1))
+                animationType =
+                    AccordionAnimationType.valueOf(getInt(R.styleable.AccordionView_av_animation, animationType.value))
+                accordionBackground = AccordionBackground.valueOf(getInt(R.styleable.AccordionView_av_background, 1))
                 expandDrawableColor = getColor(
                     R.styleable.AccordionView_av_expand_icon_color,
                     ResourceUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface)
@@ -197,6 +215,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
                 isExpanded = getBoolean(R.styleable.AccordionView_av_expanded, isExpanded)
                 expandable = getBoolean(R.styleable.AccordionView_av_expandable, expandable)
                 expandOnHeadingClick = getBoolean(R.styleable.AccordionView_av_expand_on_heading_click, expandOnHeadingClick)
+
             } finally {
                 recycle()
             }
@@ -280,6 +299,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         myState.headingTextAppearance = headingTextAppearance
         myState.animationDuration = animationDuration
         myState.visibility = this.visibility
+        initializeHeader()
         return myState
     }
 
@@ -292,6 +312,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         headingTextAppearance = savedState.headingTextAppearance
         animationDuration = savedState.animationDuration
         this.visibility = savedState.visibility
+        initializeHeader()
     }
 
     fun interface OnExpandedChangeListener {
@@ -307,30 +328,37 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         var backgroundColor = 0
         var animationDuration = 0
         var visibility = 0
+        var accordionBackground: AccordionBackground = BG_CARD
 
         internal constructor(superState: Parcelable?) : super(superState)
 
-        private constructor(`in`: Parcel) : super(`in`) {
-            cornerRadius = `in`.readInt()
-            headingTextSize = `in`.readInt()
-            headingTextColor = `in`.readInt()
-            headingTextAppearance = `in`.readInt()
-            backgroundColor = `in`.readInt()
-            animationDuration = `in`.readInt()
-            visibility = `in`.readInt()
-            expanded = `in`.readInt() == 1
+        private constructor(parcel: Parcel) : super(parcel) {
+            ParcelUtils.apply {
+                cornerRadius = readInt(parcel)!!
+                headingTextSize = readInt(parcel)!!
+                headingTextColor = readInt(parcel)!!
+                headingTextAppearance = readInt(parcel)!!
+                backgroundColor = readInt(parcel)!!
+                animationDuration = readInt(parcel)!!
+                visibility = readInt(parcel)!!
+                expanded = readBoolean(parcel)!!
+                accordionBackground = AccordionBackground.valueOf(readInt(parcel)!!)
+            }
         }
 
         override fun writeToParcel(out: Parcel, flags: Int) {
             super.writeToParcel(out, flags)
-            out.writeInt(cornerRadius)
-            out.writeInt(headingTextSize)
-            out.writeInt(headingTextColor)
-            out.writeInt(headingTextAppearance)
-            out.writeInt(backgroundColor)
-            out.writeInt(animationDuration)
-            out.writeInt(visibility)
-            out.writeInt(if (expanded) 1 else 0)
+            ParcelUtils.apply {
+                writeInt(out, cornerRadius)
+                writeInt(out, headingTextSize)
+                writeInt(out, headingTextColor)
+                writeInt(out, headingTextAppearance)
+                writeInt(out, backgroundColor)
+                writeInt(out, animationDuration)
+                writeInt(out, visibility)
+                writeBoolean(out, expanded)
+                writeInt(out, accordionBackground.value)
+            }
         }
 
         override fun describeContents(): Int {
@@ -351,6 +379,16 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     enum class AccordionAnimationType(val value: Int) {
         ANIM_NONE(1),
         ANIM_HEIGHT_TRANSITION(2);
+
+        companion object {
+            fun valueOf(value: Int) = values().first { it.value == value }
+        }
+    }
+
+    enum class AccordionBackground(val value: Int) {
+        BG_CARD(1),
+        BG_STROKED(2),
+        BG_CUSTOM(3);
 
         companion object {
             fun valueOf(value: Int) = values().first { it.value == value }
