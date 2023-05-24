@@ -50,6 +50,7 @@
         <item name="android:paddingStart">@dimen/av_spacing_size_small</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
         <item name="android:text">HEADING</item>
     </style>
 

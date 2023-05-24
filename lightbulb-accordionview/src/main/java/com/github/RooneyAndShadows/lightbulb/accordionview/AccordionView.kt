@@ -1,6 +1,7 @@
 package com.github.rooneyandshadows.lightbulb.accordionview
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Parcel
 import android.os.Parcelable
@@ -22,6 +23,7 @@ import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionTr
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs) {
     private val stateExpanded = intArrayOf(R.attr.av_state_expanded)
     private val stateCollapsed = intArrayOf(-R.attr.av_state_expanded)
@@ -37,30 +39,61 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     private val expandButton: AppCompatImageButton by lazy {
         return@lazy findViewById(R.id.accordion_expand_button)
     }
-    private var animationDuration = 250
-    private var headingTextSize = 0
-    private var expandDrawableColor: Int = 0
+    private var expandListener: OnExpandedChangeListener? = null
+    private var onGroupCheckedListener: OnExpandedChangeListener? = null
+    private var anim: AccordionAnimation? = null
+    private var inflated = false
+    private var expandIcon: Drawable? = null
+        set(value) {
+            field = value
+            field?.setTint(expandDrawableColor)
+        }
+    var animationDuration = 250
+    var expandable = true
+        set(value) {
+            field = value
+            syncExpandButton()
+        }
+    var headingTextSize: Int = -1
+        set(value) {
+            field = value
+            if (value == -1) return
+            headingTextView.textSize = headingTextSize.toFloat()
+        }
+    var animationType: AccordionAnimationType = ANIM_HEIGHT_TRANSITION
+        set(value) {
+            if (field == value) return
+            field = value
+            syncExpandButton()
+        }
+    var expandDrawableColor: Int = Color.TRANSPARENT
         set(value) {
             field = value
             expandIcon?.setTint(field)
         }
-    private var headingTextColor = 0
-    private var headingTextAppearance = -1
-    private var expandIcon: Drawable? = null
+    var headingTextColor = -1
         set(value) {
             field = value
-            field?.apply {
-                setTint(expandDrawableColor)
-            }
+            if (value == -1) return
+            headingTextView.setTextColor(headingTextColor)
         }
-    private var expandable = true
-    private var expandOnHeadingClick = true
-    private var headingText: String? = null
-    private var expandListeners: OnExpandedChangeListener? = null
-    private var onGroupCheckedListener: OnExpandedChangeListener? = null
-    private var anim: AccordionAnimation? = null
-    private var animationType: AccordionAnimationType = ANIM_HEIGHT_TRANSITION
-    private var inflated = false
+    var headingTextAppearance = -1
+        set(value) {
+            field = value
+            if (value == -1) return
+            headingTextView.setTextAppearance(headingTextAppearance)
+        }
+    var expandOnHeadingClick = true
+        set(value) {
+            if (field == value) return
+            field = value
+            syncExpandButton()
+        }
+    var headingText: String? = null
+        set(value) {
+            field = value
+            headingTextView.text = headingText
+        }
     var accordionBackground: AccordionBackground = BG_CARD
         set(value) {
             field = value
@@ -86,11 +119,11 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     init {
         isSaveEnabled = true
         orientation = VERTICAL
-        readAttributes(context, attrs)
         inflate(getContext(), R.layout.view_accordion_layout, this)
+        readAttributes(context, attrs)
         setupClips()
         initializeHeader()
-        initAnimation()
+        syncAnimation()
         inflated = true
     }
 
@@ -127,42 +160,8 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         onGroupCheckedListener = listener
     }
 
-    fun setExpandListeners(expandListeners: OnExpandedChangeListener?) {
-        this.expandListeners = expandListeners
-    }
-
-    fun setHeadingTextColor(headingTextColor: Int) {
-        this.headingTextColor = headingTextColor
-        headingTextView.setTextColor(headingTextColor)
-    }
-
-    fun setHeadingTextSize(headingTextSize: Int) {
-        this.headingTextSize = headingTextSize
-        headingTextView.textSize = headingTextSize.toFloat()
-    }
-
-    fun setHeadingTextAppearance(headingTextAppearance: Int) {
-        this.headingTextAppearance = headingTextAppearance
-        headingTextView.setTextAppearance(headingTextAppearance)
-    }
-
-    fun setAnimationDuration(animationDuration: Int) {
-        this.animationDuration = animationDuration
-    }
-
-    fun setExpandOnHeadingClick(expandOnHeadingClick: Boolean) {
-        this.expandOnHeadingClick = expandOnHeadingClick
-        syncExpandButton()
-    }
-
-    fun setHeadingText(headingText: String?) {
-        this.headingText = headingText
-        headingTextView.text = headingText
-    }
-
-    fun setExpandable(expandable: Boolean) {
-        this.expandable = expandable
-        syncExpandButton()
+    fun setOnExpandListeners(expandListener: OnExpandedChangeListener?) {
+        this.expandListener = expandListener
     }
 
     fun expand(animated: Boolean) {
@@ -170,7 +169,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         if (animated) anim!!.expand(animationDuration) else contentContainer.visibility = VISIBLE
         isExpanded = true
         expandButton.animate().setDuration(animationDuration.toLong()).rotation(180f).start()
-        if (expandListeners != null) expandListeners!!.execute(this, true)
+        if (expandListener != null) expandListener!!.execute(this, true)
         if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(this, true)
     }
 
@@ -179,7 +178,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         if (animated) anim!!.collapse(animationDuration) else contentContainer.visibility = GONE
         isExpanded = false
         expandButton.animate().setDuration(animationDuration.toLong()).rotation(0f).start()
-        if (expandListeners != null) onGroupCheckedListener!!.execute(this, false)
+        if (expandListener != null) onGroupCheckedListener!!.execute(this, false)
         if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(this, false)
     }
 
@@ -237,7 +236,6 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
 
     private fun initializeHeader() {
         headingTextView.text = headingText
-        headingTextView.setTextAppearance(headingTextAppearance)
         if (headingTextColor != -1) headingTextView.setTextColor(headingTextColor)
         if (headingTextSize != -1) headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize.toFloat())
         setupInitialExpandState()
@@ -273,7 +271,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         }
     }
 
-    private fun initAnimation() {
+    private fun syncAnimation() {
         anim = when (animationType) {
             ANIM_NONE -> AccordionShowHideAnimation(contentContainer)
             ANIM_HEIGHT_TRANSITION -> AccordionTransitionAnimation(contentContainer)
@@ -330,7 +328,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         var visibility = 0
         var accordionBackground: AccordionBackground = BG_CARD
 
-        internal constructor(superState: Parcelable?) : super(superState)
+        constructor(superState: Parcelable?) : super(superState)
 
         private constructor(parcel: Parcel) : super(parcel) {
             ParcelUtils.apply {
@@ -398,7 +396,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     companion object {
         @BindingAdapter("accordionHeadingText")
         fun setHeadingText(view: AccordionView, text: String?) {
-            view.setHeadingText(text)
+            view.headingText = text
         }
     }
 }

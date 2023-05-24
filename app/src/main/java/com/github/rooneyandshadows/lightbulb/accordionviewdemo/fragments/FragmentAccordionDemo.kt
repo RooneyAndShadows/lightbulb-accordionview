@@ -15,13 +15,14 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 class FragmentAccordionDemo : BaseFragment() {
     @BindView(name = "accordionViewCard")
     lateinit var accordionCard: AccordionView
+
     @BindView(name = "accordionViewStroke")
     lateinit var accordionStroke: AccordionView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
-        val title = ResourceUtils.getPhrase(requireContext(), R.string.demo_fragment_title)
-        val subTitle = ResourceUtils.getPhrase(requireContext(), R.string.app_name)
+        val title = ResourceUtils.getPhrase(requireContext(), R.string.app_name)
+        val subTitle = ResourceUtils.getPhrase(requireContext(), R.string.demo_fragment_title)
         val homeIcon = getHomeDrawable(requireContext())
         return ActionBarConfiguration(R.id.toolbar)
             .withActionButtons(true)
