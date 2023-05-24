@@ -22,6 +22,8 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.DrawableUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 
 class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs) {
+    private val stateExpanded = intArrayOf(R.attr.av_state_expanded)
+    private val stateCollapsed = intArrayOf(-R.attr.av_state_expanded)
     private val accordionHeader: LinearLayoutCompat by lazy {
         return@lazy findViewById(R.id.accordion_header)!!
     }
@@ -37,61 +39,92 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     private var animationDuration = 250
     private var backgroundCornerRadius = 0
     private var headingTextSize = 0
-    private var expandDrawableColor = 0
+    private var expandDrawableColor: Int = 0
+        set(value) {
+            field = value
+            expandIcon?.setTint(field)
+        }
     private var backgroundColor = 0
     private var headingTextColor = 0
     private var headingTextAppearance = -1
     private var expandIcon: Drawable? = null
-    private var collapseIcon: Drawable? = null
-    private var backgroundDrawable: Drawable? = null
-    var isExpanded = false
-        private set
+        set(value) {
+            field = value
+            field?.apply {
+                setTint(expandDrawableColor)
+            }
+        }
     private var expandable = true
     private var expandOnHeadingClick = false
     private var headingText: String? = null
-    private var expandListeners: ExpansionListeners? = null
-    private var onGroupCheckedListener: ExpansionListeners? = null
+    private var expandListeners: OnExpandedChangeListener? = null
+    private var onGroupCheckedListener: OnExpandedChangeListener? = null
     private var anim: AccordionAnimation? = null
     private var animationType: AccordionAnimationType = ANIM_NONE
+    private var inflated = false
+    var isExpanded = false
+        private set(value) {
+            if (field == value) return
+            field = value
+            refreshDrawableState()
+        }
 
     init {
         isSaveEnabled = true
+        orientation = VERTICAL
         readAttributes(context, attrs)
         inflate(getContext(), R.layout.view_accordion_layout, this)
-        orientation = VERTICAL
         setupClips()
         initializeHeader()
         initAnimation()
+        inflated = true
     }
 
     @Override
     override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
-        contentContainer.addView(child, index, params)
+        if (!inflated) super.addView(child, index, params)
+        else contentContainer.addView(child, index, params)
     }
 
     @Override
     override fun setClipChildren(clipChildren: Boolean) {
         super.setClipChildren(clipChildren)
+        if (!inflated) return
         setupClips()
     }
 
     @Override
     override fun setClipToPadding(clipToPadding: Boolean) {
         super.setClipToPadding(clipToPadding)
+        if (!inflated) return
         setupClips()
     }
 
     @Override
-    override fun setBackground(backgroundDrawable: Drawable) {
-        this.backgroundDrawable = backgroundDrawable
-        setupHeader()
+    override fun setBackground(backgroundDrawable: Drawable?) {
+        val drawable = backgroundDrawable?.let {
+            return@let DrawableUtils.getRoundedCornersDrawable(
+                backgroundColor,
+                backgroundCornerRadius
+            )
+        }
+        super.setBackground(drawable)
     }
 
-    fun setOnGroupCheckedListener(listener: ExpansionListeners?) {
+    @Override
+    override fun onCreateDrawableState(extraSpace: Int): IntArray? {
+        val drawableState = super.onCreateDrawableState(extraSpace + 1)
+        if (isExpanded) {
+            mergeDrawableStates(drawableState, stateExpanded)
+        }
+        return drawableState
+    }
+
+    fun setOnGroupCheckedListener(listener: OnExpandedChangeListener?) {
         onGroupCheckedListener = listener
     }
 
-    fun setExpandListeners(expandListeners: ExpansionListeners?) {
+    fun setExpandListeners(expandListeners: OnExpandedChangeListener?) {
         this.expandListeners = expandListeners
     }
 
@@ -116,17 +149,17 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
 
     fun setBackgroundCornerRadius(backgroundCornerRadius: Int) {
         this.backgroundCornerRadius = backgroundCornerRadius
-        setupHeader()
+        val currentBg = background
+        background = currentBg
     }
 
     fun setBackground(backgroundColor: Int) {
         this.backgroundColor = backgroundColor
-        setupHeader()
     }
 
     fun setExpandOnHeadingClick(expandOnHeadingClick: Boolean) {
         this.expandOnHeadingClick = expandOnHeadingClick
-        setupHeader()
+        syncExpandButton()
     }
 
     fun setHeadingText(headingText: String?) {
@@ -136,28 +169,27 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
 
     fun setExpandable(expandable: Boolean) {
         this.expandable = expandable
-        initializeExpandButton()
+        syncExpandButton()
     }
 
     fun expand(animated: Boolean) {
-        val view = this
         if (expandable && isExpanded || animated && anim!!.hasRunningAnimation()) return
         if (animated) anim!!.expand(animationDuration) else contentContainer.visibility = VISIBLE
         isExpanded = true
-        expandButton.setImageDrawable(collapseIcon)
-        if (expandListeners != null) expandListeners!!.execute(view, true)
-        if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(view, true)
+        expandButton.animate().setDuration(animationDuration.toLong()).rotation(180f).start()
+        if (expandListeners != null) expandListeners!!.execute(this, true)
+        if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(this, true)
     }
 
     fun collapse(animated: Boolean) {
-        val view = this
         if (expandable && !isExpanded || animated && anim!!.hasRunningAnimation()) return
         if (animated) anim!!.collapse(animationDuration) else contentContainer.visibility = GONE
         isExpanded = false
-        expandButton.setImageDrawable(expandIcon)
-        if (expandListeners != null) onGroupCheckedListener!!.execute(view, false)
-        if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(view, false)
+        expandButton.animate().setDuration(animationDuration.toLong()).rotation(0f).start()
+        if (expandListeners != null) onGroupCheckedListener!!.execute(this, false)
+        if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(this, false)
     }
+
 
     private fun setupClips() {
         contentContainer.clipToPadding = clipToPadding
@@ -170,59 +202,39 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         val attr = context.theme.obtainStyledAttributes(attrs, R.styleable.AccordionView, 0, 0)
         attr.apply {
             try {
-                headingText = getString(R.styleable.AccordionView_AV_HeadingText)
+                headingText = getString(R.styleable.AccordionView_av_heading_text)
                 if (StringUtils.isNullOrEmptyString(headingText)) headingText =
                     ResourceUtils.getPhrase(context, R.string.av_heading_default_text)
-                animationType = AccordionAnimationType.valueOf(getInt(R.styleable.AccordionView_AV_AnimationType, 1))
+                animationType = AccordionAnimationType.valueOf(getInt(R.styleable.AccordionView_av_animation, 1))
                 expandDrawableColor = getColor(
-                    R.styleable.AccordionView_AV_ExpandIconColor,
+                    R.styleable.AccordionView_av_expand_icon_color,
                     ResourceUtils.getColorByAttribute(getContext(), R.attr.colorOnSurface)
                 )
-                headingTextColor = getColor(R.styleable.AccordionView_AV_HeadingTextColor, -1)
+                headingTextColor = getColor(R.styleable.AccordionView_av_heading_text_color, -1)
                 backgroundColor = getColor(
-                    R.styleable.AccordionView_AV_BackgroundColor,
+                    R.styleable.AccordionView_av_background_color,
                     ResourceUtils.getColorByAttribute(getContext(), R.attr.colorSurface)
                 )
-                headingTextSize = getDimensionPixelSize(R.styleable.AccordionView_AV_HeadingTextSize, -1)
+                headingTextSize = getDimensionPixelSize(R.styleable.AccordionView_av_heading_text_Size, -1)
                 headingTextAppearance = getResourceId(
-                    R.styleable.AccordionView_AV_HeadingTextAppearance,
+                    R.styleable.AccordionView_av_heading_text_appearance,
                     R.style.AccordionHeadingTextAppearance
                 )
-                backgroundDrawable = getDrawable(R.styleable.AccordionView_AV_BackgroundDrawable)
-                animationDuration = getInteger(R.styleable.AccordionView_AV_AnimationDuration, animationDuration)
+                animationDuration = getInteger(R.styleable.AccordionView_av_animation_duration, animationDuration)
                 backgroundCornerRadius = getInteger(
-                    R.styleable.AccordionView_AV_BackgroundCornerRadius,
+                    R.styleable.AccordionView_av_corner_radius,
                     backgroundCornerRadius
                 )
-                isExpanded = getBoolean(R.styleable.AccordionView_AV_Expanded, isExpanded)
-                expandable = getBoolean(R.styleable.AccordionView_AV_Expandable, expandable)
-                expandOnHeadingClick = getBoolean(R.styleable.AccordionView_AV_ExpandOnHeadingClick, expandOnHeadingClick)
+                isExpanded = getBoolean(R.styleable.AccordionView_av_expanded, isExpanded)
+                expandable = getBoolean(R.styleable.AccordionView_av_expandable, expandable)
+                expandOnHeadingClick = getBoolean(R.styleable.AccordionView_av_expand_on_heading_click, expandOnHeadingClick)
             } finally {
                 recycle()
             }
         }
     }
 
-    private fun initializeHeader() {
-        headingTextView.text = headingText
-        headingTextView.setTextAppearance(headingTextAppearance)
-        if (headingTextColor != -1) headingTextView.setTextColor(headingTextColor)
-        if (headingTextSize != -1) headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize.toFloat())
-        expandIcon = ResourceUtils.getDrawable(context, R.drawable.accordion_icon_expand)
-        collapseIcon = ResourceUtils.getDrawable(context, R.drawable.accordion_icon_collapse)
-        expandIcon!!.setTint(expandDrawableColor)
-        collapseIcon!!.setTint(expandDrawableColor)
-        setupHeader()
-        setupInitialExpandState()
-        if (isInEditMode) return
-        initializeExpandButton()
-    }
-
-    private fun setupHeader() {
-        background = if (backgroundDrawable != null) backgroundDrawable else DrawableUtils.getRoundedCornersDrawable(
-                backgroundColor,
-                backgroundCornerRadius
-            )
+    private fun syncExpandButton() {
         if (expandOnHeadingClick && expandable) {
             accordionHeader.isClickable = true
             accordionHeader.isFocusable = true
@@ -235,21 +247,36 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         }
     }
 
+    private fun initializeHeader() {
+        headingTextView.text = headingText
+        headingTextView.setTextAppearance(headingTextAppearance)
+        if (headingTextColor != -1) headingTextView.setTextColor(headingTextColor)
+        if (headingTextSize != -1) headingTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headingTextSize.toFloat())
+        expandIcon = ResourceUtils.getDrawable(context, R.drawable.av_icon_expand)
+        setupInitialExpandState()
+        initializeExpandButton()
+        syncExpandButton()
+    }
+
     private fun setupInitialExpandState() {
-        if (isExpanded) if (contentContainer.visibility == GONE) contentContainer.visibility = VISIBLE
-        if (!isExpanded) if (contentContainer.visibility == VISIBLE) contentContainer.visibility = GONE
+        if (isExpanded) {
+            expandButton.rotation = 180F
+            if (contentContainer.visibility == GONE) contentContainer.visibility = VISIBLE
+
+        }
+        if (!isExpanded) {
+            expandButton.rotation = 0F
+            if (contentContainer.visibility == VISIBLE) contentContainer.visibility = GONE
+        }
     }
 
     private fun initializeExpandButton() {
-        if (isExpanded) {
-            if (expandable) expandButton.setImageDrawable(collapseIcon)
-        } else {
-            if (expandable) expandButton.setImageDrawable(expandIcon)
-        }
+        expandIcon!!.setTint(expandDrawableColor)
         if (expandable) {
-            expandButton.setBackgroundResource(R.drawable.accordion_heading_button_background)
+            expandButton.setImageDrawable(expandIcon)
+            expandButton.setBackgroundResource(R.drawable.av_heading_button_background)
             expandButton.visibility = VISIBLE
-            expandButton.setOnClickListener { view: View? -> if (isExpanded) collapse(true) else expand(true) }
+            expandButton.setOnClickListener { if (isExpanded) collapse(true) else expand(true) }
         } else {
             expandButton.background = null
             expandButton.visibility = GONE
@@ -298,7 +325,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         this.visibility = savedState.visibility
     }
 
-    fun interface ExpansionListeners {
+    fun interface OnExpandedChangeListener {
         fun execute(view: AccordionView, expanded: Boolean)
     }
 

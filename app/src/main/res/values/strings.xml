@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AccordionView</string>
+    <string name="demo_fragment_title">demonstration</string>
 </resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorActionBarBackground"
+        app:contentInsetStart="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.github.rooneyandshadows.lightbulb.accordionview.AccordionView
+        android:id="@+id/accordionView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_bar_layout"
+        android:background="?colorPrimary"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        app:av_expanded="true"
+        app:av_expand_icon_color="@color/black"
+        app:av_expand_on_heading_click="true"
+        app:av_heading_text="asfasf">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="asfasfasasfasfasf"></TextView>
+    </com.github.rooneyandshadows.lightbulb.accordionview.AccordionView>
+</RelativeLayout>
