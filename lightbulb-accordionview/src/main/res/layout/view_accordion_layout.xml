@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    tools:parentTag="androidx.appcompat.widget.LinearLayoutCompat">
+    tools:parentTag="android.widget.RelativeLayout">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/accordion_header"
@@ -13,7 +13,8 @@
 
         <TextView
             android:id="@+id/accordion_heading_text"
-            style="@style/AccordionHeaderText" />
+            style="@style/AccordionHeaderText"
+            tools:text="@string/av_heading_default_text" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/accordion_expand_button"
@@ -22,5 +23,6 @@
 
     <RelativeLayout
         android:id="@+id/accordion_content"
-        style="@style/AccordionContent" />
+        style="@style/AccordionContent"
+        android:layout_below="@id/accordion_header" />
 </merge>

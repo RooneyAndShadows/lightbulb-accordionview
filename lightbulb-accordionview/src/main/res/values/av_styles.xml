@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Accordion" />
+
+    <style name="Accordion.View">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AccordionHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/av_spacing_size_tiny</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="AccordionHeaderText">
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:minHeight">@dimen/av_heading_button_height</item>
+        <item name="android:paddingStart">@dimen/av_spacing_size_small</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="AccordionHeaderButton">
+        <item name="android:layout_width">@dimen/av_heading_button_height</item>
+        <item name="android:layout_height">@dimen/av_heading_button_height</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:padding">@dimen/av_heading_icon_padding</item>
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="AccordionContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:paddingStart">@dimen/av_spacing_size_medium</item>
+        <item name="android:paddingEnd">@dimen/av_spacing_size_medium</item>
+        <item name="android:paddingBottom">@dimen/av_spacing_size_medium</item>
+    </style>
+
+    <style name="AccordionHeadingTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+</resources>

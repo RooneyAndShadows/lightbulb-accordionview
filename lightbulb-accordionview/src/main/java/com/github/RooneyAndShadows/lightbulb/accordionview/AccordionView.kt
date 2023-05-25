@@ -23,8 +23,13 @@ import com.github.rooneyandshadows.lightbulb.accordionview.animation.AccordionTr
 import com.github.rooneyandshadows.lightbulb.commons.utils.ParcelUtils
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
-class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat(context, attrs) {
+@Suppress("MemberVisibilityCanBePrivate", "unused", "LeakingThis")
+open class AccordionView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = R.attr.accordionViewStyle,
+    defStyleRes: Int = R.style.AccordionViewDefaultStyle,
+) : RelativeLayout(context, attrs, defStyleAttr, defStyleRes) {
     private val stateExpanded = intArrayOf(R.attr.av_state_expanded)
     private val stateCollapsed = intArrayOf(-R.attr.av_state_expanded)
     private val accordionHeader: LinearLayoutCompat by lazy {
@@ -118,9 +123,8 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
 
     init {
         isSaveEnabled = true
-        orientation = VERTICAL
         inflate(getContext(), R.layout.view_accordion_layout, this)
-        readAttributes(context, attrs)
+        readAttributes(context, attrs, defStyleAttr, defStyleRes)
         setupClips()
         initializeHeader()
         syncAnimation()
@@ -190,8 +194,13 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
         accordionHeader.clipChildren = clipChildren
     }
 
-    private fun readAttributes(context: Context, attrs: AttributeSet?) {
-        val attr = context.theme.obtainStyledAttributes(attrs, R.styleable.AccordionView, 0, 0)
+    private fun readAttributes(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) {
+        val attr = context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.AccordionView,
+            defStyleAttr,
+            defStyleRes
+        )
         attr.apply {
             try {
                 headingText = getString(R.styleable.AccordionView_av_heading_text)
@@ -288,7 +297,7 @@ class AccordionView(context: Context, attrs: AttributeSet?) : LinearLayoutCompat
     //    dispatchThawSelfOnly(container);
     //}
 
-    public override fun onSaveInstanceState(): Parcelable {
+    public override fun onSaveInstanceState(): Parcelable? {
         val superState = super.onSaveInstanceState()
         val myState = SavedState(superState)
         myState.expanded = isExpanded
