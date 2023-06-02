@@ -169,7 +169,7 @@ open class AccordionView @JvmOverloads constructor(
     }
 
     fun expand(animated: Boolean) {
-        if (expandable && isExpanded || animated && anim!!.hasRunningAnimation()) return
+        if (expandable && isExpanded) return
         if (animated) anim!!.expand(animationDuration) else contentContainer.visibility = VISIBLE
         isExpanded = true
         expandButton.animate().setDuration(animationDuration.toLong()).rotation(180f).start()
@@ -178,7 +178,7 @@ open class AccordionView @JvmOverloads constructor(
     }
 
     fun collapse(animated: Boolean) {
-        if (expandable && !isExpanded || animated && anim!!.hasRunningAnimation()) return
+        if (expandable && !isExpanded) return
         if (animated) anim!!.collapse(animationDuration) else contentContainer.visibility = GONE
         isExpanded = false
         expandButton.animate().setDuration(animationDuration.toLong()).rotation(0f).start()

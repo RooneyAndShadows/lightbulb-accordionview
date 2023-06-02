@@ -10,9 +10,9 @@ import com.github.rooneyandshadows.lightbulb.application.fragment.base.BaseFragm
 import com.github.rooneyandshadows.lightbulb.application.fragment.cofiguration.ActionBarConfiguration
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 
-@FragmentScreen(screenName = "Accordion", screenGroup = "Demo")
-@FragmentConfiguration(layoutName = "fragment_demo_accordion", hasLeftDrawer = true)
-class FragmentAccordionDemo : BaseFragment() {
+@FragmentScreen(screenName = "AccordionGroup", screenGroup = "Demo")
+@FragmentConfiguration(layoutName = "fragment_demo_accordion_group", hasLeftDrawer = true)
+class FragmentAccordionGroupDemo : BaseFragment() {
     @BindView(name = "accordionViewCard")
     lateinit var accordionCard: AccordionView
 

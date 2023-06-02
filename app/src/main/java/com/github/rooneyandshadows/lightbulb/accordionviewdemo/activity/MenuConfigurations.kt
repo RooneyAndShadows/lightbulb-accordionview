@@ -1,7 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.accordionviewdemo.activity
 
 import android.annotation.SuppressLint
-import android.view.View
 import com.github.rooneyandshadows.lightbulb.accordionviewdemo.R
 import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.SliderMenu
@@ -17,13 +16,25 @@ object MenuConfigurations {
                 add(
                     PrimaryMenuItem(
                         -1,
-                        ResourceUtils.getPhrase(activity, R.string.demo_fragment_title),
+                        ResourceUtils.getPhrase(activity, R.string.demo_accordion_title),
                         null,
                         null,
                         1
                     ) { slider: SliderMenu ->
                         slider.closeSlider()
                         MainActivityNavigator.route().toDemoAccordion().replace()
+                    }
+                )
+                add(
+                    PrimaryMenuItem(
+                        -1,
+                        ResourceUtils.getPhrase(activity, R.string.demo_accordion_group_title),
+                        null,
+                        null,
+                        1
+                    ) { slider: SliderMenu ->
+                        slider.closeSlider()
+                        MainActivityNavigator.route().toDemoAccordionGroup().replace()
                     }
                 )
             }
