@@ -48,8 +48,7 @@
         <com.github.rooneyandshadows.lightbulb.accordionview.AccordionView
             android:id="@+id/accordionViewStroke"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:av_background="bg_stroked">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="wrap_content"

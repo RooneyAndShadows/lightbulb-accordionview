@@ -27,65 +27,38 @@ class AccordionGroupView(context: Context, attrs: AttributeSet?) : LinearLayoutC
         readAttributes(context, attrs)
     }
 
-    //@Override
-    //protected void dispatchSaveInstanceState(SparseArray<Parcelable> container) {
-    //    dispatchFreezeSelfOnly(container);
-    //}
-
-    //@Override
-    //protected void dispatchRestoreInstanceState(SparseArray<Parcelable> container) {
-    //    dispatchThawSelfOnly(container);
-    //}
+    @Override
+    override fun addView(child: View) {
+        if (!isValidChild(child)) return
+        setupInternalCallbacks(child as AccordionView)
+        super.addView(child)
+    }
 
     @Override
     override fun addView(child: View, index: Int) {
-        if (child !is AccordionView) {
-            Log.w(
-                AccordionView::class.java.name,
-                "Child view is ignored. Reason: Child views must be " + AccordionView::class.java.name
-            )
-            return
-        }
-        setupInternalCallbacks(child)
+        if (!isValidChild(child)) return
+        setupInternalCallbacks(child as AccordionView)
         super.addView(child, index)
     }
 
     @Override
     override fun addView(child: View, width: Int, height: Int) {
-        if (child !is AccordionView) {
-            Log.w(
-                AccordionView::class.java.name,
-                "Child view is ignored. Reason: Child views must be " + AccordionView::class.java.name
-            )
-            return
-        }
-        setupInternalCallbacks(child)
+        if (!isValidChild(child)) return
+        setupInternalCallbacks(child as AccordionView)
         super.addView(child, width, height)
     }
 
     @Override
     override fun addView(child: View, params: ViewGroup.LayoutParams) {
-        if (child !is AccordionView) {
-            Log.w(
-                AccordionView::class.java.name,
-                "Child view is ignored. Reason: Child views must be " + AccordionView::class.java.name
-            )
-            return
-        }
-        setupInternalCallbacks(child)
+        if (!isValidChild(child)) return
+        setupInternalCallbacks(child as AccordionView)
         super.addView(child, params)
     }
 
     @Override
     override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
-        if (child !is AccordionView) {
-            Log.w(
-                AccordionView::class.java.name,
-                "Child view is ignored. Reason: Child views must be " + AccordionView::class.java.name
-            )
-            return
-        }
-        setupInternalCallbacks(child)
+        if (!isValidChild(child)) return
+        setupInternalCallbacks(child as AccordionView)
         super.addView(child, index, params)
     }
 
@@ -135,14 +108,22 @@ class AccordionGroupView(context: Context, attrs: AttributeSet?) : LinearLayoutC
 
     private fun readAttributes(context: Context, attrs: AttributeSet?) {
         val a = context.theme.obtainStyledAttributes(attrs, R.styleable.AccordionGroupView, 0, 0)
-        checkedId = try {
-            a.getResourceId(
-                R.styleable.AccordionGroupView_AVG_SelectedId,
-                -1
-            )
+        try {
+            checkedId = a.getResourceId(R.styleable.AccordionGroupView_AVG_SelectedId, -1)
         } finally {
             a.recycle()
         }
+    }
+
+    private fun isValidChild(child: View): Boolean {
+        if (child !is AccordionView) {
+            Log.w(
+                AccordionView::class.java.name,
+                "Child view is ignored. Reason: Child views must be " + AccordionView::class.java.name
+            )
+            return false
+        }
+        return true
     }
 
     private fun closeAllExceptFor(id: Int, animate: Boolean) {
@@ -193,7 +174,7 @@ class AccordionGroupView(context: Context, attrs: AttributeSet?) : LinearLayoutC
         }
     }
 
-    interface OnCheckedChangeListener {
+    fun interface OnCheckedChangeListener {
         fun execute(checkedId: Int, view: AccordionView?)
     }
 

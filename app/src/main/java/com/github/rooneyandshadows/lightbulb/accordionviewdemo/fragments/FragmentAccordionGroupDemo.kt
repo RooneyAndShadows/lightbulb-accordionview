@@ -1,6 +1,6 @@
 package com.github.rooneyandshadows.lightbulb.accordionviewdemo.fragments
 
-import com.github.rooneyandshadows.lightbulb.accordionview.AccordionView
+import com.github.rooneyandshadows.lightbulb.accordionview.AccordionGroupView
 import com.github.rooneyandshadows.lightbulb.accordionviewdemo.R
 import com.github.rooneyandshadows.lightbulb.accordionviewdemo.getHomeDrawable
 import com.github.rooneyandshadows.lightbulb.annotation_processors.annotations.BindView
@@ -13,11 +13,8 @@ import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 @FragmentScreen(screenName = "AccordionGroup", screenGroup = "Demo")
 @FragmentConfiguration(layoutName = "fragment_demo_accordion_group", hasLeftDrawer = true)
 class FragmentAccordionGroupDemo : BaseFragment() {
-    @BindView(name = "accordionViewCard")
-    lateinit var accordionCard: AccordionView
-
-    @BindView(name = "accordionViewStroke")
-    lateinit var accordionStroke: AccordionView
+    @BindView(name = "accordion_group")
+    lateinit var accordionGroup: AccordionGroupView
 
     @Override
     override fun configureActionBar(): ActionBarConfiguration {
