@@ -108,9 +108,11 @@ open class AccordionView @JvmOverloads constructor(
                     elevation = ResourceUtils.getDimenById(context, R.dimen.av_bg_card_elevation)
                     ResourceUtils.getDrawable(context, R.drawable.av_bg_card)
                 }
+
                 BG_STROKED -> {
                     ResourceUtils.getDrawable(context, R.drawable.av_bg_stroke)
                 }
+
                 else -> null
             }
         }
@@ -173,8 +175,8 @@ open class AccordionView @JvmOverloads constructor(
         if (animated) anim!!.expand(animationDuration) else contentContainer.visibility = VISIBLE
         isExpanded = true
         expandButton.animate().setDuration(animationDuration.toLong()).rotation(180f).start()
-        if (expandListener != null) expandListener!!.execute(this, true)
-        if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(this, true)
+        expandListener?.execute(this, true)
+        onGroupCheckedListener?.execute(this, true)
     }
 
     fun collapse(animated: Boolean) {
@@ -182,8 +184,8 @@ open class AccordionView @JvmOverloads constructor(
         if (animated) anim!!.collapse(animationDuration) else contentContainer.visibility = GONE
         isExpanded = false
         expandButton.animate().setDuration(animationDuration.toLong()).rotation(0f).start()
-        if (expandListener != null) onGroupCheckedListener!!.execute(this, false)
-        if (onGroupCheckedListener != null) onGroupCheckedListener!!.execute(this, false)
+        expandListener?.execute(this, false)
+        onGroupCheckedListener?.execute(this, false)
     }
 
 
