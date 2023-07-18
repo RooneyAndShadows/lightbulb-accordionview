@@ -5,13 +5,14 @@ import com.github.rooneyandshadows.lightbulb.accordionviewdemo.R
 import com.github.rooneyandshadows.lightbulb.application.activity.BaseActivity
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.SliderMenu
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.config.SliderMenuConfiguration
+import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.config.SliderMenuConfiguration.HeaderConfiguration
 import com.github.rooneyandshadows.lightbulb.application.activity.slidermenu.items.PrimaryMenuItem
 import com.github.rooneyandshadows.lightbulb.commons.utils.ResourceUtils
 
 object MenuConfigurations {
     @SuppressLint("InflateParams")
     fun getConfiguration(activity: BaseActivity): SliderMenuConfiguration {
-        val configuration = SliderMenuConfiguration(R.layout.demo_drawer_header_view).apply {
+        val configuration = SliderMenuConfiguration(HeaderConfiguration(R.layout.demo_drawer_header_view)).apply {
             itemsList.apply {
                 add(
                     PrimaryMenuItem(
