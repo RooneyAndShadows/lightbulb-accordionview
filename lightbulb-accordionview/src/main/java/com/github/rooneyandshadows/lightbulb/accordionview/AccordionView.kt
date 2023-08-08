@@ -103,17 +103,19 @@ open class AccordionView @JvmOverloads constructor(
         set(value) {
             field = value
             elevation = 0F
-            background = when (value) {
+            when (value) {
                 BG_CARD -> {
                     elevation = ResourceUtils.getDimenById(context, R.dimen.av_bg_card_elevation)
-                    ResourceUtils.getDrawable(context, R.drawable.av_bg_card)
+                    val bgDrawable = ResourceUtils.getDrawable(context, R.drawable.av_bg_card)
+                    background = bgDrawable
                 }
 
                 BG_STROKED -> {
-                    ResourceUtils.getDrawable(context, R.drawable.av_bg_stroke)
+                    val bgDrawable = ResourceUtils.getDrawable(context, R.drawable.av_bg_stroke)
+                    background = bgDrawable
                 }
 
-                else -> null
+                else -> {}
             }
         }
     var isExpanded = false

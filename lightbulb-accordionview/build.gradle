@@ -9,7 +9,7 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 33
-        versionName "2.0.4"
+        versionName "2.0.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
